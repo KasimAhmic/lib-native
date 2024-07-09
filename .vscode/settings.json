@@ -1,0 +1,16 @@
+{
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "files.eol": "\n",
+  "files.associations": {
+    ".env*": "properties"
+  },
+  "typescript.preferences.importModuleSpecifier": "relative",
+  "[typescript][javascript][typescriptreact][javascriptreact][css][html][markdown][json][yaml][graphql]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[properties]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "foxundermoon.shell-format"
+  }
+}
