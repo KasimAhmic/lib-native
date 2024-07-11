@@ -6,6 +6,7 @@ import { GetForegroundWindow } from './win32/user32/get-foreground-window';
 import { GetWindowTextW } from './win32/user32/get-window-text';
 import { IsWindowVisible } from './win32/user32/is-window-visible';
 import { SetForegroundWindow } from './win32/user32/set-forground-window';
+import { SetWindowPos, WindowFlag, WindowLevel } from './win32/user32/set-window-pos';
 
 loadWin32Libraries();
 
@@ -22,12 +23,22 @@ async function main() {
 
       if (title.includes('Discord')) {
         SetForegroundWindow(windowHandle);
-      }
 
-      const foregroundWindow = GetForegroundWindow();
+        const foregroundWindow = GetForegroundWindow();
 
-      if (foregroundWindow === windowHandle) {
-        SetForegroundWindow(windowHandle);
+        if (foregroundWindow !== windowHandle) {
+          SetForegroundWindow(windowHandle);
+        }
+
+        SetWindowPos({
+          windowHandle,
+          insertAfter: WindowLevel.TOP,
+          xPosition: 0,
+          yPosition: 0,
+          width: 600,
+          height: 400,
+          flags: WindowFlag.SHOW_WINDOW,
+        });
       }
     }
 
