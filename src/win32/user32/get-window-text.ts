@@ -3,7 +3,12 @@ import { DataType, load } from 'ffi-rs';
 import { User32 } from './user32';
 
 /**
- * @param windowHandle
+ * Retrieves the text of the specified window's title bar (if it has one). If the specified window is a control, the
+ * text of the control is retrieved.
+ *
+ * @param windowHandle The handle to the window or control containing the text.
+ *
+ * @returns The text of the specified window's title bar. If the specified window is a control, the text of the control.
  *
  * @see https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getwindowtexta
  */

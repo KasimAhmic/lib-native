@@ -39,7 +39,7 @@ type SetWindowPosOptions = {
 
 /**
  *
- * @param windowHandle
+ * @param options The options for the `SetWindowPos` function.
  *
  * @see https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setwindowpos
  */

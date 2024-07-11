@@ -10,9 +10,15 @@ export type ClientRect = {
 };
 
 /**
+ * Retrieves the dimensions of the bounding rectangle of the specified window's client area.
+ *
+ * @param windowHandle The handle to the window whose client area dimensions are to be retrieved.
+ *
+ * @returns The dimensions of the bounding rectangle of the specified window's client area.
+ *
  * @see https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getclientrect
  */
-export function GetClientRect(windowHandler: number): ClientRect {
+export function GetClientRect(windowHandle: number): ClientRect {
   const buffer = Buffer.alloc(16);
 
   load({
@@ -20,7 +26,7 @@ export function GetClientRect(windowHandler: number): ClientRect {
     funcName: 'GetClientRect',
     retType: DataType.Boolean,
     paramsType: [DataType.I32, DataType.U8Array],
-    paramsValue: [windowHandler, buffer],
+    paramsValue: [windowHandle, buffer],
   });
 
   return {

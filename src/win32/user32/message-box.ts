@@ -44,6 +44,19 @@ type MessageBoxOptions = {
   defaultButton?: MessageBoxDefaultButton;
 };
 
+/**
+ * Displays a modal dialog box that contains a system icon, a set of buttons, and a brief application-specific message,
+ * such as status or error information. The message box returns an integer value that indicates which button the user
+ * clicked.
+ *
+ * @param title The text to display in the title bar of the message box.
+ * @param content The text to display in the message box.
+ * @param options The options for the message box.
+ *
+ * @returns The button clicked by the user.
+ *
+ * @see https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-messageboxw
+ */
 export function MessageBoxW(title: string, content: string, options?: MessageBoxOptions): MessageBoxResult {
   return load({
     library: User32.Name,
