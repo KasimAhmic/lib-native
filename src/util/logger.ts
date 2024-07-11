@@ -11,7 +11,7 @@ const formatter: Intl.DateTimeFormat = new Intl.DateTimeFormat('en-US', {
 });
 
 const colorMap: Record<string, Modifiers> = {
-  DEBUG: ['bgYellow', 'black'],
+  DEBUG: ['magenta'],
   LOG: ['green'],
   WARN: ['yellow'],
   ERROR: ['red'],
