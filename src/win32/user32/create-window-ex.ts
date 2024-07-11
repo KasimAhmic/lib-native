@@ -83,7 +83,14 @@ type CreateWindowExWOptions = {
   param?: string;
 };
 
-export function CreateWindowExW(options: CreateWindowExWOptions): number {
+/**
+ *
+ * @param options
+ * @returns
+ *
+ * @deprecated Broken, needs to be fixed.
+ */
+export function CreateWindowEx(options: CreateWindowExWOptions): number {
   const { windowName } = options;
 
   const width = options.width ?? WindowPosition.USE_DEFAULT;

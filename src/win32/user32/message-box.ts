@@ -44,10 +44,10 @@ type MessageBoxOptions = {
   defaultButton?: MessageBoxDefaultButton;
 };
 
-export function MessageBox(title: string, content: string, options?: MessageBoxOptions): MessageBoxResult {
+export function MessageBoxW(title: string, content: string, options?: MessageBoxOptions): MessageBoxResult {
   return load({
     library: User32.Name,
-    funcName: 'MessageBoxA',
+    funcName: 'MessageBoxW',
     retType: DataType.I32,
     paramsType: [DataType.I32, DataType.String, DataType.String, DataType.U64],
     paramsValue: [

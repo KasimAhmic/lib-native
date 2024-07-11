@@ -7,12 +7,12 @@ import { User32 } from './user32';
  *
  * @see https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getwindowtexta
  */
-export function GetWindowText(windowHandle: number): string {
+export function GetWindowTextW(windowHandle: number): string {
   const buffer = Buffer.alloc(1024);
 
   load({
     library: User32.Name,
-    funcName: 'GetWindowTextA',
+    funcName: 'GetWindowTextW',
     retType: DataType.I32,
     paramsType: [DataType.I32, DataType.U8Array, DataType.I32],
     paramsValue: [windowHandle, buffer, buffer.length],
