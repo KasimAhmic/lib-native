@@ -1,5 +1,5 @@
 {
-  "name": "@ahmic/ffi",
+  "name": "@ahmic/lib-native",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
