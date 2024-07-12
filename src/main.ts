@@ -1,5 +1,6 @@
 import { Logger } from './util/logger';
 import { loadWin32Libraries } from './win32/loader';
+import { EnumChildWindows } from './win32/user32/enum-child-windows';
 import { EnumWindows } from './win32/user32/enum-windows';
 import { GetClientRect } from './win32/user32/get-client-rect';
 import { GetForegroundWindow } from './win32/user32/get-foreground-window';
@@ -13,10 +14,14 @@ loadWin32Libraries();
 const logger = new Logger('main');
 
 async function main() {
+  const handles: number[] = [];
+
   await EnumWindows((windowHandle) => {
     const title = GetWindowTextW(windowHandle);
 
     if (title.length > 0 && IsWindowVisible(windowHandle)) {
+      handles.push(windowHandle);
+
       const rect = GetClientRect(windowHandle);
 
       logger.log(title, `Width: ${rect.right}`, `Height: ${rect.bottom}`);
@@ -44,6 +49,24 @@ async function main() {
 
     return false;
   });
+
+  for (const handle of handles) {
+    await EnumChildWindows(
+      handle,
+      (childHandle) => {
+        const title = GetWindowTextW(childHandle);
+
+        if (title.length > 0 && IsWindowVisible(childHandle)) {
+          const rect = GetClientRect(childHandle);
+
+          logger.log(' > Child Window', title, `Width: ${rect.right}`, `Height: ${rect.bottom}`);
+        }
+
+        return false;
+      },
+      0,
+    );
+  }
 }
 
 main();
