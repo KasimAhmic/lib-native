@@ -62,7 +62,7 @@ export function MessageBoxW(title: string, content: string, options?: MessageBox
     library: User32.Name,
     funcName: 'MessageBoxW',
     retType: DataType.I32,
-    paramsType: [DataType.I32, DataType.String, DataType.String, DataType.U64],
+    paramsType: [DataType.I32, DataType.WString, DataType.WString, DataType.U64],
     paramsValue: [
       0,
       content,
