@@ -1,4 +1,21 @@
-import { styleText } from 'node:util';
+import chalk from 'chalk';
+
+type ChalkStyle = keyof typeof chalk;
+
+function styleText(styles: ChalkStyle[], text: string): string {
+  let styledText = text;
+
+  // 应用样式
+  styles.forEach((style) => {
+    let styleFunction: any = chalk[style];
+    if (styleFunction instanceof Function) {
+      styledText = styleFunction(styledText);
+    }
+  });
+
+  return styledText;
+}
+
 
 const formatter: Intl.DateTimeFormat = new Intl.DateTimeFormat('en-US', {
   year: 'numeric',
