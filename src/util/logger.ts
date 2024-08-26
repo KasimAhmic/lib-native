@@ -1,4 +1,22 @@
-import { styleText } from 'node:util';
+import chalk, { BackgroundColorName, ColorName, ForegroundColorName, ModifierName } from 'chalk';
+
+type ChalkStyle =
+  | ModifierName
+  | ForegroundColorName
+  | BackgroundColorName
+  | ColorName;
+
+function styleText(styles: ChalkStyle[], text: string): string {
+  let styledText = text;
+
+  styles.forEach((style) => {
+    const styleFunction = chalk[style];
+
+    styledText = styleFunction(styledText);
+  });
+
+  return styledText;
+}
 
 const formatter: Intl.DateTimeFormat = new Intl.DateTimeFormat('en-US', {
   year: 'numeric',

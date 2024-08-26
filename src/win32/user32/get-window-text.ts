@@ -23,5 +23,7 @@ export function GetWindowTextW(windowHandle: number): string {
     paramsValue: [windowHandle, buffer, buffer.length],
   });
 
-  return buffer.toString('utf-8').replaceAll('\0', '');
+  // detail: https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-dtyp/a66edeb1-52a0-4d64-a93b-2f5c833d7d92#gt_fd33af2e-e1ce-4f8e-a706-f9fb8123f9b0
+  // all Unicode strings follow the UTF-16LE encoding scheme with no Byte Order Mark (BOM).
+  return buffer.toString('utf16le').replace(/\0+$/, '');
 }

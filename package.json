@@ -17,6 +17,7 @@
     "typescript": "^5.5.3"
   },
   "dependencies": {
-    "ffi-rs": "^1.0.83"
+    "chalk": "^5.3.0",
+    "ffi-rs": "^1.0.90"
   }
 }
