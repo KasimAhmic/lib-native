@@ -1,31 +1,31 @@
-import { HWND, LPARAM, LRESULT, UINT, WPARAM } from '../../@types';
+import { HWND, LPARAM, LRESULT, LongParam, UINT, WPARAM, WordParam } from '../../@types';
 import { user32 } from './user32';
 
 export function SendMessageW(
   windowHandle: number,
   message: Control,
-  numberParam: number,
-  stringParam: string,
+  wParam: WordParam,
+  lParam: LongParam,
 ): number {
   return user32.invoke(
     'SendMessageW',
     LRESULT,
     [HWND, UINT, WPARAM, LPARAM],
-    [windowHandle, message, numberParam, stringParam],
+    [windowHandle, message, wParam, lParam],
   );
 }
 
 export function SendMessageA(
   windowHandle: number,
   message: Control,
-  numberParam: number,
-  stringParam: string,
+  wParam: WordParam,
+  lParam: LongParam,
 ): number {
   return user32.invoke(
     'SendMessageA',
     LRESULT,
     [HWND, UINT, WPARAM, LPARAM],
-    [windowHandle, message, numberParam, stringParam],
+    [windowHandle, message, wParam, lParam],
   );
 }
 
