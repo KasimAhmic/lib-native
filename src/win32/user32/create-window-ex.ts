@@ -1,8 +1,18 @@
-import { randomUUID } from 'node:crypto';
-
-import { DataType, load } from 'ffi-rs';
-
-import { User32 } from './user32';
+import {
+  DWORD,
+  HINSTANCE,
+  HMENU,
+  HWND,
+  INT,
+  InstanceHandle,
+  LPCWSTR,
+  LPVOID,
+  LongPointerToConstantWideString,
+  LongPointerToVoid,
+  MenuHandle,
+  WindowHandle,
+} from '../../@types';
+import { user32 } from './user32';
 
 export enum ExtendedWindowStyle {
   ACCEPT_FILES = 0x00000010,
@@ -64,66 +74,60 @@ export enum WindowStyle {
   TILED_WINDOW = OVERLAPPED | CAPTION | SYS_MENU | THICK_FRAME | MINIMIZE_BOX | MAXIMIZE_BOX,
 }
 
+export enum ButtonStyle {
+  PUSHBUTTON = 0x00000000,
+  DEFPUSHBUTTON = 0x00000001,
+  CHECKBOX = 0x00000002,
+  AUTOCHECKBOX = 0x00000003,
+  RADIOBUTTON = 0x00000004,
+  THREESTATE = 0x00000005,
+  AUTO3STATE = 0x00000006,
+  GROUPBOX = 0x00000007,
+  USERBUTTON = 0x00000008,
+  AUTORADIOBUTTON = 0x00000009,
+  PUSHBOX = 0x0000000a,
+  OWNERDRAW = 0x0000000b,
+  TYPEMASK = 0x0000000f,
+  LEFTTEXT = 0x00000020,
+  TEXT = 0x00000000,
+  ICON = 0x00000040,
+  BITMAP = 0x00000080,
+  LEFT = 0x00000100,
+  RIGHT = 0x00000200,
+  CENTER = 0x00000300,
+  TOP = 0x00000400,
+  BOTTOM = 0x00000800,
+  VCENTER = 0x00000c00,
+  PUSHLIKE = 0x00001000,
+  MULTILINE = 0x00002000,
+  NOTIFY = 0x00004000,
+  FLAT = 0x00008000,
+  RIGHTBUTTON = LEFTTEXT,
+}
+
 export enum WindowPosition {
   USE_DEFAULT = 0x80000000,
 }
 
-type CreateWindowExWOptions = {
-  windowName: string;
-  width?: WindowPosition | number;
-  height?: WindowPosition | number;
-  xPosition?: WindowPosition | number;
-  yPosition?: WindowPosition | number;
-  style?: WindowStyle;
-  extendedWindowStyle?: ExtendedWindowStyle;
-  parentWindowHandle?: number;
-  className?: string;
-  menu?: number;
-  instance?: number;
-  param?: string;
-};
-
-/**
- *
- * @param options
- * @returns
- *
- * @deprecated Broken, needs to be fixed.
- */
-export function CreateWindowEx(options: CreateWindowExWOptions): number {
-  const { windowName } = options;
-
-  const width = options.width ?? WindowPosition.USE_DEFAULT;
-  const height = options.height ?? WindowPosition.USE_DEFAULT;
-  const xPosition = options.xPosition ?? WindowPosition.USE_DEFAULT;
-  const yPosition = options.yPosition ?? WindowPosition.USE_DEFAULT;
-  const extendedWindowStyle = options.extendedWindowStyle ?? 0;
-  const style = options.style ?? WindowStyle.OVERLAPPED_WINDOW;
-  const parentWindowHandle = options.parentWindowHandle ?? 0;
-  const className = options.className ?? randomUUID();
-  const menu = options.menu ?? 0;
-  const instance = options.instance ?? 0;
-  const param = options.param ?? '';
-
-  return load({
-    library: User32.Name,
-    funcName: 'CreateWindowExW',
-    retType: DataType.I32,
-    paramsType: [
-      DataType.I32,
-      DataType.String,
-      DataType.String,
-      DataType.I32,
-      DataType.I32,
-      DataType.I32,
-      DataType.I32,
-      DataType.I32,
-      DataType.I32,
-      DataType.I32,
-      DataType.I32,
-      DataType.String,
-    ],
-    paramsValue: [
+export function CreateWindowEx(
+  extendedWindowStyle: ExtendedWindowStyle,
+  className: LongPointerToConstantWideString,
+  windowName: LongPointerToConstantWideString,
+  style: WindowStyle,
+  xPosition: WindowPosition | number,
+  yPosition: WindowPosition | number,
+  width: WindowPosition | number,
+  height: WindowPosition | number,
+  parentWindowHandle: WindowHandle,
+  menuHandle: MenuHandle,
+  instanceHandle: InstanceHandle,
+  param: LongPointerToVoid,
+) {
+  return user32.invoke(
+    'CreateWindowExW',
+    HWND,
+    [DWORD, LPCWSTR, LPCWSTR, DWORD, INT, INT, INT, INT, HWND, HMENU, HINSTANCE, LPVOID],
+    [
       extendedWindowStyle,
       className,
       windowName,
@@ -133,10 +137,9 @@ export function CreateWindowEx(options: CreateWindowExWOptions): number {
       width,
       height,
       parentWindowHandle,
-      menu,
-      instance,
+      menuHandle,
+      instanceHandle,
       param,
     ],
-    freeResultMemory: true,
-  });
+  );
 }

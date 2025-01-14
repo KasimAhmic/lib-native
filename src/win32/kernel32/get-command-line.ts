@@ -1,13 +1,6 @@
-import { DataType, JsExternal, load } from 'ffi-rs';
+import { LPCWSTR } from '../../@types';
+import { kernel32 } from './kernel32';
 
-import { Kernel32 } from './kernel32';
-
-export function GetCommandLineW(): JsExternal {
-  return load({
-    library: Kernel32.Name,
-    funcName: 'GetCommandLineW',
-    retType: DataType.External,
-    paramsType: [],
-    paramsValue: [],
-  });
+export function GetCommandLineW(): string {
+  return kernel32.invoke('GetCommandLineW', LPCWSTR, [], []);
 }

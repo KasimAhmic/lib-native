@@ -1,13 +1,13 @@
-import { DataType, load } from 'ffi-rs';
+import koffi from 'koffi';
 
-import { Kernel32 } from './kernel32';
+import { LPSTARTUPINFO, VOID } from '../../@types';
+import { IStartupInfo, StartupInfo } from '../structs/startup-info';
+import { kernel32 } from './kernel32';
 
-export function GetStartupInfoW(buffer: Buffer): void {
-  return load({
-    library: Kernel32.Name,
-    funcName: 'GetStartupInfoW',
-    retType: DataType.Void,
-    paramsType: [DataType.U8Array],
-    paramsValue: [buffer],
-  });
+export function GetStartupInfoW(): IStartupInfo {
+  const startupInfo = new StartupInfo();
+
+  kernel32.invoke('GetStartupInfoW', VOID, [koffi.out(LPSTARTUPINFO)], [startupInfo]);
+
+  return startupInfo;
 }

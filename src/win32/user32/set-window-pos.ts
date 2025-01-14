@@ -1,6 +1,5 @@
-import { DataType, load } from 'ffi-rs';
-
-import { User32 } from './user32';
+import { BOOL, HWND, INT, UINT } from '../../@types';
+import { user32 } from './user32';
 
 export enum WindowLevel {
   BOTTOM = 1,
@@ -29,12 +28,12 @@ export enum WindowFlag {
 
 type SetWindowPosOptions = {
   windowHandle: number;
-  insertAfter: number | WindowLevel;
-  xPosition: number;
-  yPosition: number;
+  insertAfterHandle?: number | WindowLevel;
+  x: number;
+  y: number;
   width: number;
   height: number;
-  flags: WindowFlag;
+  flags?: WindowFlag;
 };
 
 /**
@@ -44,27 +43,18 @@ type SetWindowPosOptions = {
  * @see https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setwindowpos
  */
 export function SetWindowPos(options: SetWindowPosOptions): boolean {
-  return load({
-    library: User32.Name,
-    funcName: 'SetWindowPos',
-    retType: DataType.Boolean,
-    paramsType: [
-      DataType.I32,
-      DataType.I32,
-      DataType.I32,
-      DataType.I32,
-      DataType.I32,
-      DataType.I32,
-      DataType.I32,
-    ],
-    paramsValue: [
+  return user32.invoke(
+    'SetWindowPos',
+    BOOL,
+    [HWND, HWND, INT, INT, INT, INT, UINT],
+    [
       options.windowHandle,
-      options.insertAfter,
-      options.xPosition,
-      options.yPosition,
+      options.insertAfterHandle,
+      options.x,
+      options.y,
       options.width,
       options.height,
       options.flags ?? 0,
     ],
-  });
+  );
 }

@@ -9,3 +9,5 @@ export class Kernel32 extends Library {
     super(Kernel32.Name, join('C:', 'Windows', 'System32', `${Kernel32.Name}.dll`));
   }
 }
+
+export const kernel32 = new Kernel32();

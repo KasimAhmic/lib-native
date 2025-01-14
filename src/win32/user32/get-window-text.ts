@@ -1,6 +1,8 @@
-import { DataType, load } from 'ffi-rs';
+import koffi from 'koffi';
 
-import { User32 } from './user32';
+import { HWND, INT, LPSTR, LPWSTR } from '../../@types';
+import { NULL_TERMINATOR } from '../constants';
+import { user32 } from './user32';
 
 /**
  * Retrieves the text of the specified window's title bar (if it has one). If the specified window is a control, the
@@ -12,18 +14,28 @@ import { User32 } from './user32';
  *
  * @see https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getwindowtexta
  */
-export function GetWindowTextW(windowHandle: number): string {
-  const buffer = Buffer.alloc(1024);
+export function GetWindowTextW(windowHandle: number, bufferSize: number = 512): string {
+  const outputBuffer = Buffer.alloc(bufferSize + 1);
 
-  load({
-    library: User32.Name,
-    funcName: 'GetWindowTextW',
-    retType: DataType.I32,
-    paramsType: [DataType.I32, DataType.U8Array, DataType.I32],
-    paramsValue: [windowHandle, buffer, buffer.length],
-  });
+  user32.invoke(
+    'GetWindowTextW',
+    INT,
+    [HWND, koffi.out(LPWSTR), INT],
+    [windowHandle, outputBuffer, outputBuffer.length],
+  );
 
-  // detail: https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-dtyp/a66edeb1-52a0-4d64-a93b-2f5c833d7d92#gt_fd33af2e-e1ce-4f8e-a706-f9fb8123f9b0
-  // all Unicode strings follow the UTF-16LE encoding scheme with no Byte Order Mark (BOM).
-  return buffer.toString('utf16le').replace(/\0+$/, '');
+  return koffi.decode(outputBuffer, LPWSTR).replaceAll(NULL_TERMINATOR, '');
+}
+
+export function GetWindowTextA(windowHandle: number, bufferSize: number = 256): string {
+  const outputBuffer = Buffer.alloc(bufferSize + 1);
+
+  user32.invoke(
+    'GetWindowTextA',
+    INT,
+    [HWND, koffi.out(LPSTR), INT],
+    [windowHandle, outputBuffer, outputBuffer.length],
+  );
+
+  return koffi.decode(outputBuffer, LPSTR).replaceAll(NULL_TERMINATOR, '');
 }

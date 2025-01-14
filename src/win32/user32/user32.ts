@@ -9,3 +9,5 @@ export class User32 extends Library {
     super(User32.Name, join('C:', 'Windows', 'System32', `${User32.Name}.dll`));
   }
 }
+
+export const user32 = new User32();
