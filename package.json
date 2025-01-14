@@ -5,7 +5,8 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "tsx ./src/main.ts"
+    "start": "tsx ./src/main.ts",
+    "example:notepad": "tsx ./src/examples/notepad.ts"
   },
   "author": "",
   "license": "ISC",
