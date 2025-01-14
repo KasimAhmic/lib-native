@@ -172,11 +172,8 @@ function WinMain(instanceHandle: number, showCmd: number): number {
     0,
   );
 
-  ShowWindow(mainWindowHandle, 1);
+  ShowWindow(mainWindowHandle, showCmd);
   UpdateWindow(mainWindowHandle);
-
-  const rect = new Rect();
-  GetClientRect(rect, mainWindowHandle);
 
   const msg = new Message();
 
