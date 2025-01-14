@@ -1,10 +1,11 @@
 import koffi from 'koffi';
 
-import { BOOL, HWND, Int, LPMSG, MSG_STRUCT, UINT, WindowHandle } from '../../@types';
+import { BOOL, HWND, Int, LPMSG, UINT, WindowHandle } from '../../@types';
+import { IMessage } from '../structs/message';
 import { user32 } from './user32';
 
 export function GetMessageW(
-  message: typeof MSG_STRUCT,
+  message: IMessage,
   windowHandle: WindowHandle | null,
   filterMin: Int,
   filterMax: Int,
