@@ -9,15 +9,14 @@
   },
   "author": "",
   "license": "ISC",
-  "devDependencies": {
-    "@trivago/prettier-plugin-sort-imports": "^4.3.0",
-    "@types/node": "^20.14.10",
-    "prettier": "^3.3.2",
-    "tsx": "^4.16.2",
-    "typescript": "^5.5.3"
-  },
   "dependencies": {
-    "chalk": "^5.3.0",
-    "ffi-rs": "^1.0.90"
+    "koffi": "^2.10.0"
+  },
+  "devDependencies": {
+    "@trivago/prettier-plugin-sort-imports": "^5.2.1",
+    "@types/node": "^22.10.5",
+    "prettier": "^3.4.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3"
   }
 }
