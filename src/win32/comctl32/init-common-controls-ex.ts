@@ -5,7 +5,7 @@ import { IInitCommonControlsEx, InitCommonControlsExStruct } from '../structs/in
 import { comctl32 } from './comctl32';
 
 export function InitCommonControlsEx(styles: IInitCommonControlsEx['dwICC']): boolean {
-  const initCommonControlsEx = new InitCommonControlsExStruct();
+  const initCommonControlsEx = new InitCommonControlsExStruct(styles);
 
   initCommonControlsEx.dwSize = koffi.sizeof(INITCOMMONCONTROLSEX);
   initCommonControlsEx.dwICC = styles;

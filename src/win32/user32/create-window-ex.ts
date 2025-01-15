@@ -122,6 +122,11 @@ export enum EditStyle {
   NUMBER = 0x2000,
 }
 
+export enum StatusBarStyle {
+  SIZEGRIP = 0x0100,
+  TOOLTIPS = 0x0800,
+}
+
 export enum WindowPosition {
   USE_DEFAULT = 0x80000000,
 }

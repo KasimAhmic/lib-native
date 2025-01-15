@@ -39,10 +39,10 @@ export type Bool = number;
 export type Short = number;
 export type UnsignedShort = number;
 export type WordParam = number;
-export type LongParam = number;
+export type LongParam = number | bigint;
 export type LongResult = number;
 export type LanguageId = number;
-export type UnsignedLongPointer = number | BigInt; // TODO: Not sure if BigInt is correct here, but it seems to work
+export type UnsignedLongPointer = number | bigint; // TODO: Not sure if BigInt is correct here, but it seems to work
 
 export const HANDLE = koffi.pointer('HANDLE', koffi.opaque());
 export const HWND = koffi.alias('HWND', HANDLE);
