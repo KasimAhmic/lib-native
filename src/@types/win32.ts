@@ -20,6 +20,7 @@ export const LPARAM = koffi.alias('LPARAM', 'intptr_t');
 export const LRESULT = koffi.alias('LRESULT', 'intptr_t');
 export const LANGID = koffi.alias('LANGID', 'uint16_t');
 export const ULONG_PTR = koffi.alias('ULONG_PTR', 'uintptr_t');
+export const UINT_PTR = koffi.alias('UINT_PTR', 'uintptr_t');
 
 export type Void = void;
 export type Atom = number;
@@ -41,7 +42,7 @@ export type WordParam = number;
 export type LongParam = number;
 export type LongResult = number;
 export type LanguageId = number;
-export type UnsignedLongPointer = number;
+export type UnsignedLongPointer = number | BigInt; // TODO: Not sure if BigInt is correct here, but it seems to work
 
 export const HANDLE = koffi.pointer('HANDLE', koffi.opaque());
 export const HWND = koffi.alias('HWND', HANDLE);
@@ -76,6 +77,7 @@ export const LPWSTR = koffi.pointer('LPWSTR', WCHAR);
 export const LPSTR = koffi.pointer('LPSTR', CHAR);
 
 export const PULONG_PTR = koffi.pointer('PULONG_PTR', ULONG_PTR);
+export const PUINT_PTR = koffi.pointer('PUINT_PTR', UINT_PTR);
 
 export type LongPointerToVoid = number;
 export type LongPointerToHandle = number;

@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "tsx ./src/main.ts",
-    "example:notepad": "tsx ./src/examples/notepad.ts"
+    "example:notepad": "tsx ./src/examples/notepad/notepad.ts"
   },
   "author": "",
   "license": "ISC",
