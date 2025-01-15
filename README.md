@@ -1,15 +1,41 @@
 # lib-native
 
-This is a simple library that will someday (hopefully) provide a 1 to 1 mapping of the Windows API to JavaScript. This is a work in progress and is not yet ready for use.
+lib-native aims to provide a 1 to 1 map of the Win32 API in JavaScript. This is done by leveraging the Koffi library whcih provides a Foreign Function Interface (FFI) for JavaScript, allowing us to call into the Win32 API directly.
 
-# How?
+## What about other operating systems?
 
-I leverage the [`ffi-rs`](https://www.npmjs.com/package/ffi-rs) library to provide a foreign function interface that allows me to call into the Windows API.
+While lib-native is currently focussed on the Win32 API, I'm not against adding mappings for other operating systems as well. I happen to currently be using Windows so that's what I'm starting with. If you would like to see support for Linux or macOS, please don't hesitate to open a PR!
 
-# Why?
+## How do I use it?
 
-I was bored.
+You simply import the functions you want to use, and you call them in much the same way you would in C. Some special care needs to be taken when moving values between JavaScript and C but besides that, it's largely the same experience.
 
-# When will this be ready?
+```c++
+#include <windows.h>
+#include <stdio.h>
 
-Who knows. Probably never. Hopfully someday.
+HWND windowHandle = GetForegroundWindow();
+RECT rect = {};
+
+GetClientRect(windowHandle, &rect);
+
+printf("RECT { left: %ld, top: %ld, right: %ld, bottom: %ld }\n",
+       rect.left, rect.top, rect.right, rect.bottom);
+```
+
+```typescript
+import { GetClientRect, GetForegroundWindow, Rect, user32 } from '@ahmic/lib-native/win32';
+
+user32.load(); // You must load the library before you can use it
+
+const windowHandle = GetForegroundWindow();
+const rect = new Rect();
+
+GetClientRect(windowHandle, rect);
+
+console.log(rect); // Rect { top: 0, left: 0, right: 763, bottom: 557 }
+```
+
+## Example Usages
+
+You can find examples in the `src/examples` directory. Currently, there is only a rudimentary Notepad example but it does a fairly good job of showcasing what is possible. The end goal is to recreate it entirely.
