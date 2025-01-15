@@ -13,6 +13,6 @@ import { user32 } from './user32';
  *
  * @see https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getclientrect
  */
-export function GetClientRect(rect: IRect, windowHandle: WindowHandle): boolean {
+export function GetClientRect(windowHandle: WindowHandle, rect: IRect): boolean {
   return user32.invoke('GetClientRect', BOOL, [HWND, koffi.out(LPRECT)], [windowHandle, rect]) !== 0;
 }
