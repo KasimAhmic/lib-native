@@ -1,5 +1,7 @@
+// Class Names
 export const CLASS_NAME = 'LibNativeNotepadClass';
 
+// IDs
 export const FILE_MENU_NEW = 1;
 export const FILE_MENU_NEW_WINDOW = 2;
 export const FILE_MENU_OPEN = 3;
@@ -35,3 +37,8 @@ export const HELP_MENU_SEND_FEEDBACK = 28;
 export const HELP_MENU_ABOUT_NOTEPAD = 29;
 
 export const EDIT_ID = 30;
+
+// Sizes
+export const WINDOW_WIDTH = 800;
+export const WINDOW_HEIGHT = 600;
+export const STATUS_BAR_PART_SIZES: number[] = [140, 50, 120, 130];

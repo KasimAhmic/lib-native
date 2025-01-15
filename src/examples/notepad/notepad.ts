@@ -2,18 +2,19 @@
  * Proof of concept Notepad example using lib-native.
  *
  * Todos:
- * - Add a menu bar
- * - Add a status bar
  * - Figure out how to set fonts, the default one is ugly
  * - Set the icon to a notepad icon
  * - Update the title bar to show the file name
+ * - Implement a state system to track changes
  */
 import { resolve } from 'node:path';
 
 import koffi from 'koffi';
 
-import { WindowHandle } from '../../@types';
+import { InstanceHandle, WindowHandle } from '../../@types';
 import { highWord, lowWord } from '../../util/number.util';
+import { int32ArrayToLongParam, wideStringToLongParam } from '../../util/type.util';
+import { EDIT_CLASS_NAME, STATUS_CLASS_NAME } from '../../win32/classes';
 import { comctl32 } from '../../win32/comctl32/comctl32';
 import { InitCommonControlsEx } from '../../win32/comctl32/init-common-controls-ex';
 import { createCookie } from '../../win32/helpers/create-cookie';
@@ -23,11 +24,12 @@ import { GetLastError } from '../../win32/kernel32/get-last-error';
 import { GetModuleHandleW } from '../../win32/kernel32/get-module-handle';
 import { kernel32 } from '../../win32/kernel32/kernel32';
 import { ActivationContextW } from '../../win32/structs/activation-context';
+import { CommonControlStyles } from '../../win32/structs/init-common-controls-ex';
 import { Message } from '../../win32/structs/message';
 import { AppendMenuW, MenuFlag } from '../../win32/user32/append-menu';
 import { CreateMenu } from '../../win32/user32/create-menu';
 import { CreatePopupMenu } from '../../win32/user32/create-popup-menu';
-import { CreateWindowEx, EditStyle, WindowStyle } from '../../win32/user32/create-window-ex';
+import { CreateWindowEx, EditStyle, StatusBarStyle, WindowStyle } from '../../win32/user32/create-window-ex';
 import { DefWindowProcW } from '../../win32/user32/def-window-proc';
 import { DispatchMessageW } from '../../win32/user32/dispatch-message';
 import { GetMessageW } from '../../win32/user32/get-message';
@@ -72,10 +74,13 @@ import {
   HELP_MENU_ABOUT_NOTEPAD,
   HELP_MENU_SEND_FEEDBACK,
   HELP_MENU_VIEW_HELP,
+  STATUS_BAR_PART_SIZES,
   VIEW_MENU_RESTORE_DEFAULT_ZOOM,
   VIEW_MENU_STATUS_BAR,
   VIEW_MENU_ZOOM_IN,
   VIEW_MENU_ZOOM_OUT,
+  WINDOW_HEIGHT,
+  WINDOW_WIDTH,
 } from './notepad.constants';
 
 comctl32.load();
@@ -83,6 +88,7 @@ kernel32.load();
 user32.load();
 
 let editHandle: number;
+let statusBarHandle: number;
 
 function WindowProcedure(windowPointer: number, uMsg: number, wParam: number, lParam: number): number {
   let ret: number | null = null;
@@ -92,24 +98,41 @@ function WindowProcedure(windowPointer: number, uMsg: number, wParam: number, lP
       menuHandler(windowPointer, uMsg, wParam, lParam);
 
       break;
+
     case Control.WM_DESTROY:
       PostQuitMessage(0);
       ret = 0;
       break;
 
     case Control.WM_SIZE:
+      const width = lowWord(lParam);
+      const height = highWord(lParam);
+      const parts = getStatusBarParts(width);
+
       SetWindowPos({
         windowHandle: editHandle,
         x: 0,
         y: 0,
-        width: lowWord(lParam),
-        height: highWord(lParam),
+        width: width,
+        height: height - 23,
         flags: 0x0040 | 0x0020,
       });
+
+      SetWindowPos({
+        windowHandle: statusBarHandle,
+        x: 0,
+        y: height - 20,
+        width: width,
+        height: 20,
+        flags: 0x0002,
+      });
+
+      SendMessageW(statusBarHandle, Control.SB_SETPARTS, parts.length, int32ArrayToLongParam(parts));
 
       ret = 0;
 
       break;
+
     default:
       ret = DefWindowProcW(windowPointer, uMsg, wParam, lParam);
 
@@ -121,7 +144,7 @@ function WindowProcedure(windowPointer: number, uMsg: number, wParam: number, lP
 
 function WinMain(instanceHandle: number, showCmd: number): number {
   // TODO: Create an enum for this
-  InitCommonControlsEx(0x00004000);
+  InitCommonControlsEx(CommonControlStyles.BAR_CLASSES);
 
   const activationContext = new ActivationContextW({
     lpSource: resolve(process.cwd(), 'src', 'examples', 'notepad', 'notepad.manifest'),
@@ -170,8 +193,8 @@ function WinMain(instanceHandle: number, showCmd: number): number {
     13565952,
     2147483648,
     2147483648,
-    800,
-    600,
+    WINDOW_WIDTH,
+    WINDOW_HEIGHT,
     0,
     0,
     instanceHandle,
@@ -189,7 +212,7 @@ function WinMain(instanceHandle: number, showCmd: number): number {
 
   editHandle = CreateWindowEx(
     0,
-    'EDIT',
+    EDIT_CLASS_NAME,
     '',
     WindowStyle.CHILD |
       WindowStyle.VISIBLE |
@@ -200,8 +223,8 @@ function WinMain(instanceHandle: number, showCmd: number): number {
       EditStyle.AUTOVSCROLL,
     0,
     0,
-    800,
-    600,
+    WINDOW_WIDTH,
+    WINDOW_HEIGHT - 580,
     mainWindowHandle,
     EDIT_ID,
     instanceHandle,
@@ -210,6 +233,7 @@ function WinMain(instanceHandle: number, showCmd: number): number {
 
   SendMessageW(editHandle, Control.EM_SETLIMITTEXT, 1024 * 1024, 0);
   createMenu(mainWindowHandle);
+  createStatusBar(mainWindowHandle, instanceHandle);
 
   ShowWindow(mainWindowHandle, showCmd);
   UpdateWindow(mainWindowHandle);
@@ -291,6 +315,48 @@ function createMenu(windowHandle: WindowHandle): number {
   SetMenu(windowHandle, menuHandle);
 
   return 0;
+}
+
+function createStatusBar(mainWindowHandle: WindowHandle, instanceHandle: InstanceHandle) {
+  statusBarHandle = CreateWindowEx(
+    0,
+    STATUS_CLASS_NAME,
+    null,
+    WindowStyle.CHILD | WindowStyle.VISIBLE | StatusBarStyle.SIZEGRIP,
+    0,
+    0,
+    2000,
+    0,
+    mainWindowHandle,
+    0,
+    instanceHandle,
+    0,
+  );
+
+  const parts = getStatusBarParts(WINDOW_WIDTH);
+
+  SendMessageW(statusBarHandle, Control.WM_SIZE, 0, 0);
+  SendMessageW(statusBarHandle, Control.SB_SETPARTS, parts.length, int32ArrayToLongParam(parts));
+  SendMessageW(statusBarHandle, Control.SB_SETTEXTW, 0, wideStringToLongParam(''));
+  SendMessageW(statusBarHandle, Control.SB_SETTEXTW, 1, wideStringToLongParam('Ln 1, Col 1'));
+  SendMessageW(statusBarHandle, Control.SB_SETTEXTW, 2, wideStringToLongParam('100%'));
+  SendMessageW(statusBarHandle, Control.SB_SETTEXTW, 3, wideStringToLongParam('Windows (CRLF)'));
+  SendMessageW(statusBarHandle, Control.SB_SETTEXTW, 4, wideStringToLongParam('UTF-8'));
+}
+
+function getStatusBarParts(totalWidth: number): number[] {
+  const parts: number[] = [];
+
+  const partOne = totalWidth - STATUS_BAR_PART_SIZES.reduce((acc, curr) => acc + curr, 0);
+  parts.push(partOne);
+
+  let runningTotal = partOne;
+
+  for (let i = 0; i < STATUS_BAR_PART_SIZES.length; i++) {
+    parts.push((runningTotal += STATUS_BAR_PART_SIZES[i]));
+  }
+
+  return parts;
 }
 
 process.exitCode = WinMain(GetModuleHandleW(null), 1);
