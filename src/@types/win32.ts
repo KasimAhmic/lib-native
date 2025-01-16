@@ -52,6 +52,7 @@ export const HICON = koffi.alias('HICON', HANDLE);
 export const HCURSOR = koffi.alias('HCURSOR', HANDLE);
 export const HBRUSH = koffi.alias('HBRUSH', HANDLE);
 export const HMODULE = koffi.alias('HMODULE', HANDLE);
+export const HBITMAP = koffi.alias('HBITMAP', HANDLE);
 export const HRESULT = koffi.alias('HRESULT', 'long');
 
 export type Handle = number;
@@ -62,6 +63,7 @@ export type IconHandle = Handle;
 export type CursorHandle = Handle;
 export type BrushHandle = Handle;
 export type ModuleHandle = Handle;
+export type BitmapHandle = Handle;
 
 export const LPVOID = koffi.pointer('LPVOID', PVOID);
 export const LPHANDLE = koffi.pointer('LPHANDLE', HANDLE);
@@ -76,9 +78,11 @@ export const LPCSTR = koffi.pointer('LPCSTR', CHAR);
 export const LPWSTR = koffi.pointer('LPWSTR', WCHAR);
 export const LPSTR = koffi.pointer('LPSTR', CHAR);
 
+export const LONG_PTR = koffi.pointer('LONG_PTR', LONG);
 export const PULONG_PTR = koffi.pointer('PULONG_PTR', ULONG_PTR);
 export const PUINT_PTR = koffi.pointer('PUINT_PTR', UINT_PTR);
 
+export type LongPointer = number;
 export type LongPointerToVoid = number;
 export type LongPointerToHandle = number;
 export type LongPointerToDoubleWord = number;
