@@ -36,7 +36,16 @@ export const HELP_MENU_VIEW_HELP = 27;
 export const HELP_MENU_SEND_FEEDBACK = 28;
 export const HELP_MENU_ABOUT_NOTEPAD = 29;
 
+export const DEBUG_MENU_LIPSUM = 500;
+
 export const EDIT_ID = 30;
+
+// Status Bar Parts
+export const STATUS_BAR_EMPTY = 0;
+export const STATUS_BAR_LINE_COL = 1;
+export const STATUS_BAR_ZOOM_LEVEL = 2;
+export const STATUS_BAR_LINE_ENDING = 3;
+export const STATUS_BAR_ENCODING = 4;
 
 // Sizes
 export const WINDOW_WIDTH = 800;
