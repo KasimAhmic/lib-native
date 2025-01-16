@@ -17,6 +17,8 @@ enum Color {
   RESET = '\x1b[1;0m',
 }
 
+type Message = string | number | boolean | Record<string, unknown> | unknown[] | null | undefined;
+
 export class Logger {
   private readonly name: string;
   private readonly formatter: Intl.DateTimeFormat;
@@ -41,28 +43,28 @@ export class Logger {
     this.timestampLastUpdated = 1000;
   }
 
-  debug(...message: string[]): void {
-    this.write(LogLevel.DEBUG, Color.MAGENTA, message.join(' '));
+  debug(...messages: Message[]): void {
+    this.write(LogLevel.DEBUG, Color.MAGENTA, messages);
   }
 
-  log(...message: string[]): void {
-    this.write(LogLevel.LOG, Color.GREEN, message.join(' '));
+  log(...messages: Message[]): void {
+    this.write(LogLevel.LOG, Color.GREEN, messages);
   }
 
-  warn(...message: string[]): void {
-    this.write(LogLevel.WARN, Color.YELLOW, message.join(' '));
+  warn(...messages: Message[]): void {
+    this.write(LogLevel.WARN, Color.YELLOW, messages);
   }
 
-  error(...message: string[]): void {
-    this.write(LogLevel.ERROR, Color.RED, message.join(' '));
+  error(...messages: Message[]): void {
+    this.write(LogLevel.ERROR, Color.RED, messages);
   }
 
-  fatal(...message: string[]): void {
-    this.write(LogLevel.FATAL, Color.WHITE, message.join(' '));
+  fatal(...messages: Message[]): void {
+    this.write(LogLevel.FATAL, Color.WHITE, messages);
   }
 
-  verbose(...message: string[]): void {
-    this.write(LogLevel.VERBOSE, Color.CYAN, message.join(' '));
+  verbose(...messages: Message[]): void {
+    this.write(LogLevel.VERBOSE, Color.CYAN, messages);
   }
 
   logFunctionCall<Args extends unknown[], Result extends unknown>(
@@ -82,9 +84,9 @@ export class Logger {
     process.stdout.write(`${header} ${fnName}(${fnArgs}) ${arrow} ${fnResult}\n`);
   }
 
-  private write(level: LogLevel, color: Color, message: string): void {
+  private write(level: LogLevel, color: Color, messages: Message[]): void {
     const header = this.formatHeader(level, color);
-    const msg = `${color}${message}${Color.RESET}`;
+    const msg = `${color}${this.formatMessage(messages)}${Color.RESET}`;
 
     process.stdout.write(`${header} ${msg}\n`);
   }
@@ -99,6 +101,32 @@ export class Logger {
     const name = `${nameColor}[${this.name}]${Color.RESET}`;
 
     return `${lib} ${pid} - ${timestamp} ${lvl} ${name}`;
+  }
+
+  private formatMessage(messages: Message[]): string {
+    const parts: string[] = [];
+
+    for (let i = 0; i < messages.length; i++) {
+      const message = messages[i];
+
+      switch (typeof message) {
+        case 'string':
+        case 'number':
+        case 'boolean':
+          parts.push(`${message}`);
+          break;
+        case 'undefined':
+          parts.push('undefined');
+          break;
+        case 'object':
+          parts.push(message ? JSON.stringify(message) : 'null');
+          break;
+        default:
+          parts.push(`${message}`);
+      }
+    }
+
+    return parts.join(' ');
   }
 
   private get timestamp(): string {
