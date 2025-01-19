@@ -51,3 +51,6 @@ export const STATUS_BAR_ENCODING = 4;
 export const WINDOW_WIDTH = 800;
 export const WINDOW_HEIGHT = 600;
 export const STATUS_BAR_PART_SIZES: number[] = [140, 50, 120, 130];
+
+// Misc
+export const MAX_EDIT_LENGTH = 1024 * 1024 * 1024;

@@ -2,7 +2,6 @@
  * Proof of concept Notepad example using lib-native.
  *
  * Todos:
- * - Figure out how to set fonts, the default one is ugly
  * - Set the icon to a notepad icon
  * - Update the title bar to show the file name
  * - Implement a state system to track changes (WIP)
@@ -16,13 +15,14 @@ import { resolve } from 'node:path';
 
 import koffi from 'koffi';
 
-import { InstanceHandle, WindowHandle } from '../../@types';
-import { Logger } from '../../util/logger';
+import { WindowHandle } from '../../@types';
 import { highWord, lowWord } from '../../util/number.util';
 import { int32ArrayToLongParam, wideStringToLongParam } from '../../util/type.util';
 import { EDIT_CLASS_NAME, STATUS_CLASS_NAME } from '../../win32/classes';
 import { comctl32 } from '../../win32/comctl32/comctl32';
 import { InitCommonControlsEx } from '../../win32/comctl32/init-common-controls-ex';
+import { CreateFontW } from '../../win32/gdi32/create-font';
+import { gdi32 } from '../../win32/gdi32/gdi32';
 import { createCookie } from '../../win32/helpers/create-cookie';
 import { ActivateActCtx } from '../../win32/kernel32/activate-act-ctx';
 import { CreateActCtxW } from '../../win32/kernel32/create-act-ctx';
@@ -55,7 +55,6 @@ import { SetMenu } from '../../win32/user32/set-menu';
 import { SetWindowPos } from '../../win32/user32/set-window-pos';
 import { ShowWindow } from '../../win32/user32/show-window';
 import { TranslateMessage } from '../../win32/user32/translate-message';
-import { UpdateWindow } from '../../win32/user32/update-window';
 import { user32 } from '../../win32/user32/user32';
 import { menuHandler } from './menu.handler';
 import {
@@ -87,6 +86,7 @@ import {
   HELP_MENU_ABOUT_NOTEPAD,
   HELP_MENU_SEND_FEEDBACK,
   HELP_MENU_VIEW_HELP,
+  MAX_EDIT_LENGTH,
   STATUS_BAR_EMPTY,
   STATUS_BAR_ENCODING,
   STATUS_BAR_LINE_COL,
@@ -105,9 +105,10 @@ import { state } from './state';
 comctl32.load();
 kernel32.load();
 user32.load();
+gdi32.load();
 
 function WindowProcedure(
-  windowPointer: number,
+  windowHandle: WindowHandle,
   message: number,
   wordParam: number,
   longParam: number,
@@ -115,6 +116,59 @@ function WindowProcedure(
   let ret: number | null = null;
 
   switch (message) {
+    case Control.WM_CREATE:
+      state.handles.mainWindowHandle = windowHandle;
+
+      state.handles.editHandle = CreateWindowEx(
+        0,
+        EDIT_CLASS_NAME,
+        '',
+        WindowStyle.CHILD |
+          WindowStyle.VISIBLE |
+          WindowStyle.H_SCROLL |
+          WindowStyle.V_SCROLL |
+          EditStyle.NOHIDESEL |
+          EditStyle.MULTILINE,
+        0,
+        0,
+        WINDOW_WIDTH,
+        WINDOW_HEIGHT - 580,
+        state.handles.mainWindowHandle,
+        EDIT_ID,
+        state.handles.instanceHandle,
+        0,
+      );
+
+      SendMessageW(state.handles.editHandle, Control.EM_SETLIMITTEXT, MAX_EDIT_LENGTH, 0);
+
+      createMenu();
+      createStatusBar();
+
+      state.handles.fontHandle = CreateFontW(
+        state.font.height,
+        state.font.width,
+        state.font.escapement,
+        state.font.orientation,
+        state.font.weight,
+        state.font.italic,
+        state.font.underline,
+        state.font.strikeOut,
+        state.font.charSet,
+        state.font.outPrecision,
+        state.font.clipPrecision,
+        state.font.quality,
+        state.font.pitchAndFamily,
+        state.font.fontFaceName,
+      );
+
+      /**
+       * TODO: Figure out how to allow bigints into WordParam without breaking anything. Might be as simple
+       * doing number | bigint in the WordParam definition
+       */
+      SendMessageW(state.handles.editHandle, Control.WM_SETFONT, koffi.address(state.handles.fontHandle), 1);
+
+      break;
+
     case Control.WM_COMMAND:
       menuHandler({ message, wordParam, longParam });
 
@@ -122,7 +176,6 @@ function WindowProcedure(
 
     case Control.WM_DESTROY:
       PostQuitMessage(0);
-      ret = 0;
       break;
 
     case Control.WM_SIZE:
@@ -155,12 +208,10 @@ function WindowProcedure(
         int32ArrayToLongParam(parts),
       );
 
-      ret = 0;
-
       break;
 
     default:
-      ret = DefWindowProcW(windowPointer, message, wordParam, longParam);
+      ret = DefWindowProcW(windowHandle, message, wordParam, longParam);
 
       break;
   }
@@ -238,32 +289,8 @@ function WinMain(instanceHandle: number, showCmd: number): number {
     });
   }
 
-  state.handles.editHandle = CreateWindowEx(
-    0,
-    EDIT_CLASS_NAME,
-    '',
-    WindowStyle.CHILD |
-      WindowStyle.VISIBLE |
-      WindowStyle.H_SCROLL |
-      WindowStyle.V_SCROLL |
-      EditStyle.NOHIDESEL |
-      EditStyle.MULTILINE,
-    0,
-    0,
-    WINDOW_WIDTH,
-    WINDOW_HEIGHT - 580,
-    state.handles.mainWindowHandle,
-    EDIT_ID,
-    state.handles.instanceHandle,
-    0,
-  );
-
-  SendMessageW(state.handles.editHandle, Control.EM_SETLIMITTEXT, 1024 * 1024 * 1024, 0);
-  createMenu();
-  createStatusBar();
-
   ShowWindow(state.handles.mainWindowHandle, showCmd);
-  UpdateWindow(state.handles.mainWindowHandle);
+  // UpdateWindow(state.handles.mainWindowHandle);
 
   const msg = new Message();
 
@@ -275,7 +302,7 @@ function WinMain(instanceHandle: number, showCmd: number): number {
   return 0;
 }
 
-function createMenu(): number {
+function createMenu() {
   state.handles.menuHandle = CreateMenu();
   state.handles.fileMenuHandle = CreateMenu();
   state.handles.editMenuHandle = CreateMenu();
@@ -365,8 +392,6 @@ function createMenu(): number {
   );
 
   SetMenu(state.handles.mainWindowHandle, state.handles.menuHandle);
-
-  return 0;
 }
 
 function createStatusBar() {
