@@ -1,6 +1,6 @@
 import koffi from 'koffi';
 
-import { Win32ToTypeScriptType } from '../@types';
+import { Nominal, Win32Type } from '../@types';
 import { Logger } from '../util/logger';
 
 export class Library {
@@ -50,14 +50,14 @@ export class Library {
   }
 
   invoke<
-    FunctionReturnType extends koffi.IKoffiCType,
-    const FunctionArgumentTypes extends koffi.IKoffiCType[],
+    FunctionReturnType extends Win32Type<Nominal<unknown, unknown>>,
+    const FunctionArgumentTypes extends Win32Type<Nominal<unknown, unknown>>[],
   >(
     functionName: string,
     functionReturnType: FunctionReturnType,
     functionArgumentTypes: FunctionArgumentTypes,
     functionArguments: any[],
-  ): Win32ToTypeScriptType<FunctionReturnType> {
+  ): NonNullable<FunctionReturnType['__jsType']> {
     if (!this.loaded) {
       throw new Error(`Library ${this.name} is not loaded`);
     }

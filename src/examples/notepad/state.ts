@@ -1,10 +1,10 @@
-import { MenuHandle, WindowHandle } from '../../@types';
+import { InstanceHandle, MenuHandle, WindowHandle } from '../../@types';
 
 export type State = {
   isWordWrapEnabled: boolean;
   zoomLevel: number;
   handles: {
-    instanceHandle: WindowHandle;
+    instanceHandle: InstanceHandle;
     mainWindowHandle: WindowHandle;
     editHandle: WindowHandle;
     statusBarHandle: WindowHandle;

@@ -42,7 +42,7 @@ type SetWindowPosOptions = {
  *
  * @see https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setwindowpos
  */
-export function SetWindowPos(options: SetWindowPosOptions): boolean {
+export function SetWindowPos(options: SetWindowPosOptions): number {
   return user32.invoke(
     'SetWindowPos',
     BOOL,

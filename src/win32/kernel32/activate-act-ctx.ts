@@ -1,8 +1,8 @@
 import koffi from 'koffi';
 
-import { BOOL, HWND, PULONG_PTR, WindowHandle } from '../../@types';
+import { BOOL, HANDLE, Handle, PULONG_PTR } from '../../@types';
 import { kernel32 } from './kernel32';
 
-export function ActivateActCtx(windowHandle: WindowHandle, cookie: Buffer) {
-  return kernel32.invoke('ActivateActCtx', BOOL, [HWND, PULONG_PTR], [windowHandle, cookie]);
+export function ActivateActCtx(windowHandle: Handle, cookie: Buffer): number {
+  return kernel32.invoke('ActivateActCtx', BOOL, [HANDLE, koffi.out(PULONG_PTR)], [windowHandle, cookie]);
 }

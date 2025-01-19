@@ -7,7 +7,7 @@ export function SetMenuItemInfoW(
   item: UnsignedInt,
   byPosition: boolean,
   menuItemInfo: IMenuItemInfoW,
-): boolean {
+): number {
   return user32.invoke(
     'SetMenuItemInfoW',
     BOOL,
@@ -21,7 +21,7 @@ export function SetMenuItemInfoA(
   item: UnsignedInt,
   byPosition: boolean,
   menuItemInfo: IMenuItemInfoA,
-): boolean {
+): number {
   return user32.invoke(
     'SetMenuItemInfoA',
     BOOL,

@@ -32,7 +32,7 @@ export function AppendMenuW(
   flags: MenuFlag,
   idNewItem: UnsignedLongPointer,
   newItem: LongPointerToConstantWideString,
-): boolean {
+): number {
   return user32.invoke(
     'AppendMenuW',
     BOOL,
@@ -46,7 +46,7 @@ export function AppendMenuA(
   flags: MenuFlag,
   idNewItem: UnsignedLongPointer,
   newItem: LongPointerToConstantString,
-): boolean {
+): number {
   return user32.invoke(
     'AppendMenuA',
     BOOL,
