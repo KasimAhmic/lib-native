@@ -1,3 +1,5 @@
+import { inspect } from 'node:util';
+
 enum LogLevel {
   DEBUG = '  DEBUG',
   LOG = '    LOG',
@@ -9,13 +11,22 @@ enum LogLevel {
 
 enum Color {
   MAGENTA = '\x1b[1;35m',
-  GREEN = '\x1b[32m',
+  GREEN = '\x1b[1;32m',
   YELLOW = '\x1b[1;33m',
   RED = '\x1b[1;31m',
   WHITE = '\x1b[1;37m',
   CYAN = '\x1b[36m',
   RESET = '\x1b[1;0m',
 }
+
+const LOG_LEVEL_COLORS: Record<LogLevel, Color> = {
+  [LogLevel.DEBUG]: Color.MAGENTA,
+  [LogLevel.LOG]: Color.GREEN,
+  [LogLevel.WARN]: Color.YELLOW,
+  [LogLevel.ERROR]: Color.RED,
+  [LogLevel.FATAL]: Color.WHITE,
+  [LogLevel.VERBOSE]: Color.CYAN,
+};
 
 type Message = string | number | boolean | Record<string, unknown> | unknown[] | null | undefined;
 
@@ -25,6 +36,7 @@ export class Logger {
 
   private cachedTimestamp: string;
   private timestampLastUpdated: number;
+  private ignoreList: string[];
 
   constructor(name: string, locale: string = 'en-US', formatterOptions: Intl.DateTimeFormatOptions = {}) {
     this.name = name;
@@ -41,30 +53,35 @@ export class Logger {
 
     this.cachedTimestamp = this.timestamp;
     this.timestampLastUpdated = 1000;
+    this.ignoreList = [];
   }
 
   debug(...messages: Message[]): void {
-    this.write(LogLevel.DEBUG, Color.MAGENTA, messages);
+    this.write(LogLevel.DEBUG, messages);
   }
 
   log(...messages: Message[]): void {
-    this.write(LogLevel.LOG, Color.GREEN, messages);
+    this.write(LogLevel.LOG, messages);
   }
 
   warn(...messages: Message[]): void {
-    this.write(LogLevel.WARN, Color.YELLOW, messages);
+    this.write(LogLevel.WARN, messages);
   }
 
   error(...messages: Message[]): void {
-    this.write(LogLevel.ERROR, Color.RED, messages);
+    this.write(LogLevel.ERROR, messages);
   }
 
   fatal(...messages: Message[]): void {
-    this.write(LogLevel.FATAL, Color.WHITE, messages);
+    this.write(LogLevel.FATAL, messages);
   }
 
   verbose(...messages: Message[]): void {
-    this.write(LogLevel.VERBOSE, Color.CYAN, messages);
+    this.write(LogLevel.VERBOSE, messages);
+  }
+
+  ignore(...functionNames: string[]): void {
+    this.ignoreList.push(...functionNames);
   }
 
   logFunctionCall<Args extends unknown[], Result extends unknown>(
@@ -72,26 +89,49 @@ export class Logger {
     functionArguments: Args,
     functionResult: Result,
   ): void {
-    const header = this.formatHeader(LogLevel.DEBUG, Color.MAGENTA);
+    if (this.ignoreList.includes(functionName)) {
+      return;
+    }
 
-    const fnName = `${Color.YELLOW}${functionName}${Color.RESET}`;
+    const header = this.formatHeader(LogLevel.VERBOSE);
+
+    const fnName = `${Color.GREEN}${functionName}${Color.RESET}`;
     const fnArgs = functionArguments
-      .map((arg) => `${Color.CYAN}${JSON.stringify(arg)}${Color.RESET}`)
+      .map((arg) => `${Color.CYAN}${this.parseType(arg)}${Color.RESET}`)
       .join(', ');
     const arrow = `${Color.GREEN}=>${Color.RESET}`;
-    const fnResult = `${Color.GREEN}${functionResult}${Color.RESET}`;
+    const fnResult = `${Color.GREEN}${this.parseType(functionResult)}${Color.RESET}`;
 
     process.stdout.write(`${header} ${fnName}(${fnArgs}) ${arrow} ${fnResult}\n`);
   }
 
-  private write(level: LogLevel, color: Color, messages: Message[]): void {
-    const header = this.formatHeader(level, color);
+  private parseType(value: unknown): string {
+    switch (typeof value) {
+      case 'string':
+        return `"${value}"`;
+      case 'number':
+      case 'bigint':
+      case 'boolean':
+        return `${value}`;
+      case 'undefined':
+        return 'undefined';
+      case 'object':
+        return value === null ? 'null' : inspect(value, { depth: 1, compact: true, breakLength: Infinity });
+      default:
+        return typeof value;
+    }
+  }
+
+  private write(level: LogLevel, messages: Message[]): void {
+    const color = LOG_LEVEL_COLORS[level];
+    const header = this.formatHeader(level);
     const msg = `${color}${this.formatMessage(messages)}${Color.RESET}`;
 
     process.stdout.write(`${header} ${msg}\n`);
   }
 
-  private formatHeader(level: LogLevel, color: Color): string {
+  private formatHeader(level: LogLevel): string {
+    const color = LOG_LEVEL_COLORS[level];
     const nameColor = process.env.NO_COLOR ? [] : Color.YELLOW;
 
     const lib = `${color}[lib-native]${Color.RESET}`;
