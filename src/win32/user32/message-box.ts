@@ -1,4 +1,4 @@
-import { HWND, INT, LPCWSTR, UINT } from '../../@types';
+import { HWND, INT, Int, LPCWSTR, LongPointerToConstantWideString, UINT, WindowHandle } from '../../@types';
 import { user32 } from './user32';
 
 export enum MessageBoxButtons {
@@ -37,40 +37,31 @@ enum MessageBoxResult {
   CONTINUE = 11, // The Continue button was selected.
 }
 
-type MessageBoxOptions = {
-  buttons?: MessageBoxButtons;
-  icon?: MessageBoxIcon;
-  defaultButton?: MessageBoxDefaultButton;
-};
-
 /**
  * Displays a modal dialog box that contains a system icon, a set of buttons, and a brief application-specific message,
  * such as status or error information. The message box returns an integer value that indicates which button the user
  * clicked.
  *
- * @param title The text to display in the title bar of the message box.
+ * @param windowHandle A handle to the owner window of the message box to be created.
  * @param content The text to display in the message box.
- * @param options The options for the message box.
+ * @param title The text to display in the title bar of the message box.
+ * @param type The contents and behavior of the dialog box. This parameter can be a combination of flags from the
+ * MessageBoxButtons, MessageBoxIcon, and MessageBoxDefaultButton enumerations.
  *
  * @returns The button clicked by the user.
  *
  * @see https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-messageboxw
  */
 export function MessageBoxW(
-  windowHandle: number | null,
-  title: string,
-  content: string,
-  options?: MessageBoxOptions,
+  windowHandle: WindowHandle | null,
+  content: LongPointerToConstantWideString | null,
+  title: LongPointerToConstantWideString | null,
+  type: Int,
 ): MessageBoxResult {
   return user32.invoke(
     'MessageBoxW',
     INT,
     [HWND, LPCWSTR, LPCWSTR, UINT],
-    [
-      windowHandle,
-      title,
-      content,
-      (options?.buttons ?? 0) | (options?.icon ?? 0) | (options?.defaultButton ?? 0),
-    ],
+    [windowHandle, title, content, type],
   );
 }
