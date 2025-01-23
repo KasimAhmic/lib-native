@@ -15,6 +15,14 @@ export class Library {
     this.name = name;
     this.path = path;
     this.logger = new Logger(this.constructor.name);
+
+    this.logger.ignore(
+      'GetMessageW',
+      'DispatchMessageW',
+      'TranslateMessage',
+      'TranslateAcceleratorW',
+      'DefWindowProcW',
+    );
   }
 
   load() {
@@ -62,13 +70,12 @@ export class Library {
       throw new Error(`Library ${this.name} is not loaded`);
     }
 
-    // this.logger.logFunctionCall(functionName, functionArguments, '...');
-
     const func = this.lib.func('__stdcall', functionName, functionReturnType, functionArgumentTypes);
 
     const result = func(...functionArguments);
 
-    // this.logger.logFunctionCall(functionName, functionArguments, result);
+    // Special care needs to be taken when logging some of these values as they are not all easily serializable
+    this.logger.logFunctionCall(functionName, functionArguments, result);
 
     return result;
   }
