@@ -22,5 +22,13 @@
   "importOrderParserPlugins": [
     "typescript",
     "decorators-legacy"
+  ],
+  "overrides": [
+    {
+      "files": "notepad.constants.ts",
+      "options": {
+        "printWidth": 120
+      }
+    }
   ]
 }

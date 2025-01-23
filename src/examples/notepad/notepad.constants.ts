@@ -1,5 +1,7 @@
+import { Accelerator, AcceleratorBehavior, IAccelerator, VirtualKey } from '../../win32/structs/accelerator';
+
 // Class Names
-export const CLASS_NAME = 'LibNativeNotepadClass';
+export const CLASS_NAME = 'LibNativeNotepad';
 
 // IDs
 export const FILE_MENU_NEW = 1;
@@ -54,3 +56,35 @@ export const STATUS_BAR_PART_SIZES: number[] = [140, 50, 120, 130];
 
 // Misc
 export const MAX_EDIT_LENGTH = 1024 * 1024 * 1024;
+
+const { FCONTROL, FSHIFT, FVIRTKEY } = AcceleratorBehavior;
+
+export const ACCELERATORS: IAccelerator[] = [
+  // File
+  new Accelerator({ fVirt: FVIRTKEY | FCONTROL, key: VirtualKey.N, cmd: FILE_MENU_NEW }),
+  new Accelerator({ fVirt: FVIRTKEY | FCONTROL | FSHIFT, key: VirtualKey.N, cmd: FILE_MENU_NEW_WINDOW }),
+  new Accelerator({ fVirt: FVIRTKEY | FCONTROL, key: VirtualKey.O, cmd: FILE_MENU_OPEN }),
+  new Accelerator({ fVirt: FVIRTKEY | FCONTROL, key: VirtualKey.S, cmd: FILE_MENU_SAVE }),
+  new Accelerator({ fVirt: FVIRTKEY | FCONTROL | FSHIFT, key: VirtualKey.S, cmd: FILE_MENU_SAVE_AS }),
+  new Accelerator({ fVirt: FVIRTKEY | FCONTROL, key: VirtualKey.P, cmd: FILE_MENU_PRINT }),
+
+  // Edit
+  new Accelerator({ fVirt: FVIRTKEY | FCONTROL, key: VirtualKey.Z, cmd: EDIT_MENU_UNDO }),
+  new Accelerator({ fVirt: FVIRTKEY | FCONTROL, key: VirtualKey.X, cmd: EDIT_MENU_CUT }),
+  new Accelerator({ fVirt: FVIRTKEY | FCONTROL, key: VirtualKey.C, cmd: EDIT_MENU_COPY }),
+  new Accelerator({ fVirt: FVIRTKEY | FCONTROL, key: VirtualKey.V, cmd: EDIT_MENU_PASTE }),
+  new Accelerator({ fVirt: FVIRTKEY, key: VirtualKey.DELETE, cmd: EDIT_MENU_DELETE }),
+  new Accelerator({ fVirt: FVIRTKEY | FCONTROL, key: VirtualKey.F, cmd: EDIT_MENU_FIND }),
+  new Accelerator({ fVirt: FVIRTKEY, key: VirtualKey.F3, cmd: EDIT_MENU_FIND_NEXT }),
+  new Accelerator({ fVirt: FVIRTKEY | FSHIFT, key: VirtualKey.F3, cmd: EDIT_MENU_FIND_PREVIOUS }),
+  new Accelerator({ fVirt: FVIRTKEY | FCONTROL, key: VirtualKey.H, cmd: EDIT_MENU_REPLACE }),
+  new Accelerator({ fVirt: FVIRTKEY | FCONTROL, key: VirtualKey.G, cmd: EDIT_MENU_GO_TO }),
+  new Accelerator({ fVirt: FVIRTKEY | FCONTROL, key: VirtualKey.A, cmd: EDIT_MENU_SELECT_ALL }),
+  new Accelerator({ fVirt: FVIRTKEY, key: VirtualKey.F5, cmd: EDIT_MENU_TIME_DATE }),
+
+  // View
+  new Accelerator({ fVirt: FVIRTKEY | FCONTROL, key: VirtualKey.ADD, cmd: VIEW_MENU_ZOOM_IN }),
+  new Accelerator({ fVirt: FVIRTKEY | FCONTROL, key: VirtualKey.SUBTRACT, cmd: VIEW_MENU_ZOOM_OUT }),
+  new Accelerator({ fVirt: FVIRTKEY | FCONTROL, key: VirtualKey.ZERO, cmd: VIEW_MENU_RESTORE_DEFAULT_ZOOM }),
+  new Accelerator({ fVirt: FVIRTKEY | FCONTROL, key: VirtualKey.NUMPAD0, cmd: VIEW_MENU_RESTORE_DEFAULT_ZOOM }),
+];

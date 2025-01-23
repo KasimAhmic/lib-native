@@ -1,17 +1,16 @@
-import { LIPSUM } from '../../@testing/lipsum';
-import { Logger } from '../../util/logger';
-import { lowWord } from '../../util/number.util';
-import { wideStringToLongParam } from '../../util/type.util';
-import { GetLastError } from '../../win32/kernel32/get-last-error';
-import { MenuFlagState, MenuItemInfoMask, MenuItemInfoW } from '../../win32/structs/menu-item-info';
-import { Rect } from '../../win32/structs/rect';
-import { WindowStyle } from '../../win32/user32/create-window-ex';
-import { GetClientRect } from '../../win32/user32/get-client-rect';
-import { GetWindowLongPtrW, WindowLongPtrIndex } from '../../win32/user32/get-window-long-ptr';
-import { Control, SendMessageW } from '../../win32/user32/send-message';
-import { SetMenuItemInfoW } from '../../win32/user32/set-menu-item-info';
-import { SetWindowLongPtrW } from '../../win32/user32/set-window-long-ptr';
-import { SetWindowPos } from '../../win32/user32/set-window-pos';
+import { LIPSUM } from '../../../@testing/lipsum';
+import { Logger } from '../../../util/logger';
+import { lowWord } from '../../../util/number.util';
+import { wideStringToLongParam } from '../../../util/type.util';
+import { MenuFlagState, MenuItemInfoMask, MenuItemInfoW } from '../../../win32/structs/menu-item-info';
+import { Rect } from '../../../win32/structs/rect';
+import { WindowStyle } from '../../../win32/user32/create-window-ex';
+import { GetClientRect } from '../../../win32/user32/get-client-rect';
+import { GetWindowLongPtrW, WindowLongPtrIndex } from '../../../win32/user32/get-window-long-ptr';
+import { Control, SendMessageW } from '../../../win32/user32/send-message';
+import { SetMenuItemInfoW } from '../../../win32/user32/set-menu-item-info';
+import { SetWindowLongPtrW } from '../../../win32/user32/set-window-long-ptr';
+import { SetWindowPos } from '../../../win32/user32/set-window-pos';
 import {
   DEBUG_MENU_LIPSUM,
   EDIT_MENU_COPY,
@@ -44,19 +43,13 @@ import {
   VIEW_MENU_STATUS_BAR,
   VIEW_MENU_ZOOM_IN,
   VIEW_MENU_ZOOM_OUT,
-} from './notepad.constants';
-import { DEFAULT_ZOOM_LEVEL, ZOOM_LEVEL_INCREMENT, state } from './state';
+} from '../notepad.constants';
+import { DEFAULT_ZOOM_LEVEL, ZOOM_LEVEL_INCREMENT, state } from '../state';
 
 const logger = new Logger('MenuHandler');
 
-type HandlerEvent = {
-  message: number;
-  wordParam: number;
-  longParam: number;
-};
-
-export function menuHandler(e: HandlerEvent) {
-  switch (lowWord(e.wordParam)) {
+export function handleMenu(wordParam: number, longParam: number): number {
+  switch (lowWord(wordParam)) {
     case FILE_MENU_NEW:
       logger.debug('FILE_MENU_NEW', FILE_MENU_NEW);
       break;
@@ -94,22 +87,28 @@ export function menuHandler(e: HandlerEvent) {
 
     case EDIT_MENU_UNDO:
       logger.debug('EDIT_MENU_UNDO', EDIT_MENU_UNDO);
+      SendMessageW(state.handles.editHandle, Control.EM_UNDO, 0, 0);
       break;
 
     case EDIT_MENU_CUT:
       logger.debug('EDIT_MENU_CUT', EDIT_MENU_CUT);
+      SendMessageW(state.handles.editHandle, Control.WM_CUT, 0, 0);
       break;
 
     case EDIT_MENU_COPY:
       logger.debug('EDIT_MENU_COPY', EDIT_MENU_COPY);
+      SendMessageW(state.handles.editHandle, Control.WM_COPY, 0, 0);
       break;
 
     case EDIT_MENU_PASTE:
       logger.debug('EDIT_MENU_PASTE', EDIT_MENU_PASTE);
+      SendMessageW(state.handles.editHandle, Control.WM_PASTE, 0, 0);
       break;
 
     case EDIT_MENU_DELETE:
       logger.debug('EDIT_MENU_DELETE', EDIT_MENU_DELETE);
+      // TODO: Figure out how to handle both the delete key and the delete menu item
+      SendMessageW(state.handles.editHandle, Control.WM_CLEAR, 0, 0);
       break;
 
     case EDIT_MENU_FIND:
@@ -134,6 +133,7 @@ export function menuHandler(e: HandlerEvent) {
 
     case EDIT_MENU_SELECT_ALL:
       logger.debug('EDIT_MENU_SELECT_ALL', EDIT_MENU_SELECT_ALL);
+      SendMessageW(state.handles.editHandle, Control.EM_SETSEL, 0, -1);
       break;
 
     case EDIT_MENU_TIME_DATE:
@@ -196,6 +196,8 @@ export function menuHandler(e: HandlerEvent) {
       SendMessageW(state.handles.editHandle, Control.WM_SETTEXT, 0, wideStringToLongParam(LIPSUM));
       break;
   }
+
+  return 0;
 }
 
 function updateZoomLevel() {
