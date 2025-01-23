@@ -101,6 +101,7 @@ export const WPARAM: Win32Type<WordParam> = koffi.alias('WPARAM', UINT_PTR);
 
 // Handle types
 export const HANDLE: Win32Type<Handle> = koffi.pointer('HANDLE', koffi.opaque());
+export const HACCEL: Win32Type<Handle> = koffi.alias('HACCEL', HANDLE);
 export const HBITMAP: Win32Type<BitmapHandle> = koffi.alias('HBITMAP', HANDLE);
 export const HBRUSH: Win32Type<BrushHandle> = koffi.alias('HBRUSH', HANDLE);
 export const HCOLORSPACE: Win32Type<ColorSpaceHandle> = koffi.alias('HCOLORSPACE', HANDLE);
@@ -199,7 +200,7 @@ export type UnsignedLong64 = Nominal<number, 'ULONG64'>;
 export type UnsignedShort = Nominal<number, 'USHORT'>;
 export type WideChar = Nominal<string, 'WCHAR'>;
 export type Word = Nominal<number, 'WORD'>;
-export type Void = Nominal<number, 'VOID'>;
+export type Void = Nominal<void, 'VOID'>;
 export type PointerToVoid = Nominal<number, 'PVOID'>;
 
 export type Atom = Nominal<number, 'ATOM'>;
@@ -211,6 +212,7 @@ export type LongResult = Nominal<number, 'LRESULT'>;
 export type WordParam = Nominal<number, 'WPARAM'>;
 
 export type Handle = Nominal<number, 'HANDLE'>;
+export type AcceleratorTableHandle = Nominal<Handle['__jsType'], 'HACCEL'>;
 export type BitmapHandle = Nominal<Handle['__jsType'], 'HBITMAP'>;
 export type BrushHandle = Nominal<Handle['__jsType'], 'HBRUSH'>;
 export type ColorSpaceHandle = Nominal<Handle['__jsType'], 'HCOLORSPACE'>;
@@ -266,6 +268,15 @@ export type LongPointerToWord = Nominal<number, 'LPWORD'>;
 export type PointerToUnsignedLongPointer = Nominal<number | bigint, 'PULONG_PTR'>;
 export type PointerToUnsignedIntPointer = Nominal<number, 'PUINT_PTR'>;
 
+/**
+ * Technically, the argument types should be the proper Win32Types, but for the sake of simplicity, we use
+ * `number` here.
+ */
+export type WindowProcedure = Nominal<
+  (windowHandle: number, message: number, wParam: number, lParam: number) => LongResult,
+  'WNDPROC'
+>;
+
 // TODO: Move structs to dedicated files and convert them to classes
 
 export const WNDENUMPROC = koffi.proto('__stdcall', 'WNDENUMPROC', BOOL, [HWND, LPARAM]);
@@ -273,20 +284,6 @@ export const WNDPROC = koffi.pointer(
   'WNDPROC',
   koffi.proto('__wndproc', LRESULT, [HWND, UINT, WPARAM, LPARAM]),
 );
-
-export const POINT = koffi.struct('POINT', {
-  x: LONG,
-  y: LONG,
-});
-export const LPPOINT = koffi.pointer('LPPOINT', POINT);
-
-export const RECT = koffi.struct('RECT', {
-  left: LONG,
-  top: LONG,
-  right: LONG,
-  bottom: LONG,
-});
-export const LPRECT = koffi.pointer('LPRECT', RECT);
 
 export const STARTUPINFO = koffi.struct('STARTUPINFO', {
   cb: DWORD,
@@ -309,34 +306,3 @@ export const STARTUPINFO = koffi.struct('STARTUPINFO', {
   hStdError: HANDLE,
 });
 export const LPSTARTUPINFO = koffi.pointer('LPSTARTUPINFO', STARTUPINFO);
-
-export const WNDCLASSEXW = koffi.struct('WNDCLASSEXW', {
-  cbSize: UINT,
-  style: UINT,
-  lpfnWndProc: WNDPROC,
-  cbClsExtra: INT,
-  cbWndExtra: INT,
-  hInstance: HINSTANCE,
-  hIcon: HICON,
-  hCursor: HCURSOR,
-  hbrBackground: HBRUSH,
-  lpszMenuName: LPCTSTR,
-  lpszClassName: LPCTSTR,
-  hIconSm: HICON,
-});
-
-export const MSG = koffi.struct('MSG', {
-  hwnd: HWND,
-  message: UINT,
-  wParam: WPARAM,
-  lParam: LPARAM,
-  time: DWORD,
-  pt: POINT,
-});
-export const LPMSG = koffi.pointer('LPMSG', MSG);
-
-export const INITCOMMONCONTROLSEX = koffi.struct('INITCOMMONCONTROLSEX', {
-  dwSize: DWORD,
-  dwICC: DWORD,
-});
-export const LPINITCOMMONCONTROLSEX = koffi.pointer('LPINITCOMMONCONTROLSEX', INITCOMMONCONTROLSEX);

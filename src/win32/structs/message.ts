@@ -1,5 +1,18 @@
-import { DoubleWord, LongParam, UnsignedInt, WindowHandle, WordParam } from '../../@types';
-import { IPoint } from './point';
+import koffi from 'koffi';
+
+import {
+  DWORD,
+  DoubleWord,
+  HWND,
+  LPARAM,
+  LongParam,
+  UINT,
+  UnsignedInt,
+  WPARAM,
+  WindowHandle,
+  WordParam,
+} from '../../@types';
+import { IPoint, POINT } from './point';
 
 export interface IMessage {
   hwnd: WindowHandle;
@@ -17,9 +30,18 @@ export class Message {
   wParam: WordParam;
   lParam: LongParam;
   time: DoubleWord;
-  pt: {
-    x: IPoint['x'];
-    y: IPoint['y'];
-  };
+  pt: IPoint;
   lPrivate: DoubleWord;
 }
+
+export const MSG = koffi.struct('MSG', {
+  hwnd: HWND,
+  message: UINT,
+  wParam: WPARAM,
+  lParam: LPARAM,
+  time: DWORD,
+  pt: POINT,
+  lPrivate: DWORD,
+});
+
+export const LPMSG = koffi.pointer('LPMSG', MSG);

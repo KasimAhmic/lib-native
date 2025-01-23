@@ -1,6 +1,6 @@
 import koffi from 'koffi';
 
-import { DoubleWord, INITCOMMONCONTROLSEX } from '../../@types';
+import { DWORD, DoubleWord } from '../../@types';
 
 export enum CommonControlStyles {
   LISTVIEW_CLASSES = 0x00000001,
@@ -31,8 +31,16 @@ export class InitCommonControlsExStruct implements IInitCommonControlsEx {
   dwSize: DoubleWord;
   dwICC: DoubleWord;
 
-  constructor(styles: CommonControlStyles) {
+  constructor(options: Omit<IInitCommonControlsEx, 'dwSize'>) {
+    Object.assign(this, options);
+
     this.dwSize = koffi.sizeof(INITCOMMONCONTROLSEX);
-    this.dwICC = styles;
   }
 }
+
+export const INITCOMMONCONTROLSEX = koffi.struct('INITCOMMONCONTROLSEX', {
+  dwSize: DWORD,
+  dwICC: DWORD,
+});
+
+export const LPINITCOMMONCONTROLSEX = koffi.pointer('LPINITCOMMONCONTROLSEX', INITCOMMONCONTROLSEX);
