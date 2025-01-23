@@ -1,6 +1,6 @@
-import { INT, VOID } from '../../@types';
+import { INT, VOID, Void } from '../../@types';
 import { user32 } from './user32';
 
-export function PostQuitMessage(exitCode: number): void {
-  user32.invoke('PostQuitMessage', VOID, [INT], [exitCode]);
+export function PostQuitMessage(exitCode: number): Void {
+  return user32.invoke('PostQuitMessage', VOID, [INT], [exitCode]);
 }

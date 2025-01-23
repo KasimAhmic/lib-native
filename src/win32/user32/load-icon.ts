@@ -1,4 +1,4 @@
-import { HICON, HINSTANCE, InstanceHandle, LPCWSTR } from '../../@types';
+import { HICON, HINSTANCE, IconHandle, InstanceHandle, LPCWSTR } from '../../@types';
 import { user32 } from './user32';
 
 export enum Icon {
@@ -14,6 +14,6 @@ export enum Icon {
   IDI_INFORMATION = IDI_ASTERISK,
 }
 
-export function LoadIconW(instanceHandle: InstanceHandle, iconName: Icon): number {
+export function LoadIconW(instanceHandle: InstanceHandle | null, iconName: Icon): IconHandle {
   return user32.invoke('LoadIconW', HICON, [HINSTANCE, LPCWSTR], [instanceHandle, iconName]);
 }

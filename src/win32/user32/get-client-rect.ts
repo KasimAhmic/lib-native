@@ -1,7 +1,7 @@
 import koffi from 'koffi';
 
-import { BOOL, HWND, LPRECT, WindowHandle } from '../../@types';
-import { IRect } from '../structs/rect';
+import { BOOL, Bool, HWND, WindowHandle } from '../../@types';
+import { IRect, LPRECT } from '../structs/rect';
 import { user32 } from './user32';
 
 /**
@@ -13,6 +13,6 @@ import { user32 } from './user32';
  *
  * @see https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getclientrect
  */
-export function GetClientRect(windowHandle: WindowHandle, rect: IRect): boolean {
-  return user32.invoke('GetClientRect', BOOL, [HWND, koffi.out(LPRECT)], [windowHandle, rect]) !== 0;
+export function GetClientRect(windowHandle: WindowHandle, rect: IRect): Bool {
+  return user32.invoke('GetClientRect', BOOL, [HWND, koffi.out(LPRECT)], [windowHandle, rect]);
 }

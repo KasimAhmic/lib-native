@@ -1,0 +1,13 @@
+{
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Notepad Example",
+      "runtimeExecutable": "npm",
+      "cwd": "${workspaceFolder}",
+      "args": ["run", "example:notepad"],
+      "outputCapture": "std"
+    }
+  ]
+}
