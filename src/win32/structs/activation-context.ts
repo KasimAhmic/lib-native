@@ -27,6 +27,14 @@ export enum ActivationContextFlag {
   HMODULE_VALID = 0x080,
 }
 
+interface IActivationContext {
+  cbSize: UnsignedLong;
+  dwFlags: DoubleWord;
+  wProcessorArchitecture: UnsignedShort;
+  wLangId: LanguageId;
+  hModule: ModuleHandle;
+}
+
 class ActivationContext<T extends IActivationContextA | IActivationContextW> {
   cbSize: UnsignedLong;
   dwFlags: DoubleWord;
@@ -52,8 +60,6 @@ class ActivationContext<T extends IActivationContextA | IActivationContextW> {
       },
       ...options,
     });
-
-    this.cbSize = koffi.sizeof(ACTCTXW);
 
     if (this.lpSource) {
       this.dwFlags |= 0x000;
@@ -85,39 +91,33 @@ class ActivationContext<T extends IActivationContextA | IActivationContextW> {
   }
 }
 
-export interface IActivationContextW {
-  cbSize: UnsignedLong;
-  dwFlags: DoubleWord;
+export interface IActivationContextW extends IActivationContext {
   lpSource: LongPointerToConstantWideString;
-  wProcessorArchitecture: UnsignedShort;
-  wLangId: LanguageId;
   lpAssemblyDirectory: LongPointerToConstantWideString;
   lpResourceName: LongPointerToConstantWideString;
   lpApplicationName: LongPointerToConstantWideString;
-  hModule: ModuleHandle;
 }
 
 export class ActivationContextW extends ActivationContext<IActivationContextW> {
   constructor(options: Partial<Omit<IActivationContextW, 'cbSize'>> = {}) {
     super(options);
+
+    this.cbSize = koffi.sizeof(ACTCTXW);
   }
 }
 
-export interface IActivationContextA {
-  cbSize: UnsignedLong;
-  dwFlags: DoubleWord;
+export interface IActivationContextA extends IActivationContext {
   lpSource: LongPointerToConstantString;
-  wProcessorArchitecture: UnsignedShort;
-  wLangId: LanguageId;
   lpAssemblyDirectory: LongPointerToConstantString;
   lpResourceName: LongPointerToConstantString;
   lpApplicationName: LongPointerToConstantString;
-  hModule: ModuleHandle;
 }
 
 export class ActivationContextA extends ActivationContext<IActivationContextA> {
   constructor(options: Partial<Omit<IActivationContextA, 'cbSize'>> = {}) {
     super(options);
+
+    this.cbSize = koffi.sizeof(ACTCTXA);
   }
 }
 
