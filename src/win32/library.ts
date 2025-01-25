@@ -1,12 +1,12 @@
 import koffi from 'koffi';
 
 import { Nominal, Win32Type } from '../@types';
-import { Logger } from '../util/logger';
+import { FunctionLogger } from '../util/function-logger';
 
 export class Library {
   private readonly name: string;
   private readonly path: string;
-  private readonly logger: Logger;
+  private readonly logger: FunctionLogger;
   private readonly functionCache: Record<string, any> = {};
 
   private lib: koffi.IKoffiLib;
@@ -15,7 +15,7 @@ export class Library {
   constructor(name: string, path: string) {
     this.name = name;
     this.path = path;
-    this.logger = new Logger(this.constructor.name);
+    this.logger = new FunctionLogger(this.constructor.name);
 
     this.logger.ignore(
       'GetMessageW',
@@ -75,7 +75,6 @@ export class Library {
 
     const result = func(...functionArguments);
 
-    // Special care needs to be taken when logging some of these values as they are not all easily serializable
     this.logger.logFunctionCall(functionName, functionArguments, result);
 
     return result;
@@ -97,22 +96,5 @@ export class Library {
     this.functionCache[functionName] = func;
 
     return func;
-  }
-
-  private mapFunctionArguments(functionArguments: any[]): string {
-    return functionArguments
-      .map((arg) => {
-        switch (typeof arg) {
-          case 'string':
-            return `'${arg}'`;
-          case 'undefined':
-            return 'void';
-          case 'object':
-            return arg === null ? 'null' : arg;
-          default:
-            return arg;
-        }
-      })
-      .join(', ');
   }
 }

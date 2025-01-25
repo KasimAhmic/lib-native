@@ -1,6 +1,4 @@
-import { inspect } from 'node:util';
-
-enum LogLevel {
+export enum LogLevel {
   DEBUG = '  DEBUG',
   LOG = '    LOG',
   WARN = '   WARN',
@@ -9,7 +7,7 @@ enum LogLevel {
   VERBOSE = 'VERBOSE',
 }
 
-enum Color {
+export enum Color {
   MAGENTA = '\x1b[1;35m',
   GREEN = '\x1b[1;32m',
   YELLOW = '\x1b[1;33m',
@@ -36,7 +34,6 @@ export class Logger {
 
   private cachedTimestamp: string;
   private timestampLastUpdated: number;
-  private ignoreList: string[];
 
   constructor(name: string, locale: string = 'en-US', formatterOptions: Intl.DateTimeFormatOptions = {}) {
     this.name = name;
@@ -53,7 +50,6 @@ export class Logger {
 
     this.cachedTimestamp = this.timestamp;
     this.timestampLastUpdated = 1000;
-    this.ignoreList = [];
   }
 
   debug(...messages: Message[]): void {
@@ -80,49 +76,7 @@ export class Logger {
     this.write(LogLevel.VERBOSE, messages);
   }
 
-  ignore(...functionNames: string[]): void {
-    this.ignoreList.push(...functionNames);
-  }
-
-  logFunctionCall<Args extends unknown[], Result extends unknown>(
-    functionName: string,
-    functionArguments: Args,
-    functionResult: Result,
-  ): void {
-    if (this.ignoreList.includes(functionName)) {
-      return;
-    }
-
-    const header = this.formatHeader(LogLevel.VERBOSE);
-
-    const fnName = `${Color.GREEN}${functionName}${Color.RESET}`;
-    const fnArgs = functionArguments
-      .map((arg) => `${Color.CYAN}${this.parseType(arg)}${Color.RESET}`)
-      .join(', ');
-    const arrow = `${Color.GREEN}=>${Color.RESET}`;
-    const fnResult = `${Color.GREEN}${this.parseType(functionResult)}${Color.RESET}`;
-
-    process.stdout.write(`${header} ${fnName}(${fnArgs}) ${arrow} ${fnResult}\n`);
-  }
-
-  private parseType(value: unknown): string {
-    switch (typeof value) {
-      case 'string':
-        return `"${value}"`;
-      case 'number':
-      case 'bigint':
-      case 'boolean':
-        return `${value}`;
-      case 'undefined':
-        return 'undefined';
-      case 'object':
-        return value === null ? 'null' : inspect(value, { depth: 1, compact: true, breakLength: Infinity });
-      default:
-        return typeof value;
-    }
-  }
-
-  private write(level: LogLevel, messages: Message[]): void {
+  protected write(level: LogLevel, messages: Message[]): void {
     const color = LOG_LEVEL_COLORS[level];
     const header = this.formatHeader(level);
     const msg = `${color}${this.formatMessage(messages)}${Color.RESET}`;
@@ -130,7 +84,7 @@ export class Logger {
     process.stdout.write(`${header} ${msg}\n`);
   }
 
-  private formatHeader(level: LogLevel): string {
+  protected formatHeader(level: LogLevel): string {
     const color = LOG_LEVEL_COLORS[level];
     const nameColor = process.env.NO_COLOR ? [] : Color.YELLOW;
 
@@ -143,7 +97,7 @@ export class Logger {
     return `${lib} ${pid} - ${timestamp} ${lvl} ${name}`;
   }
 
-  private formatMessage(messages: Message[]): string {
+  protected formatMessage(messages: Message[]): string {
     const parts: string[] = [];
 
     for (let i = 0; i < messages.length; i++) {
@@ -169,7 +123,7 @@ export class Logger {
     return parts.join(' ');
   }
 
-  private get timestamp(): string {
+  protected get timestamp(): string {
     if (Date.now() - this.timestampLastUpdated >= 1000) {
       this.cachedTimestamp = this.formatter.format(Date.now());
       this.timestampLastUpdated = Date.now();
