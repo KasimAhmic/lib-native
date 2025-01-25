@@ -4,14 +4,107 @@ import {
   BitmapHandle,
   HBITMAP,
   HMENU,
+  LPSTR,
   LPWSTR,
   LongPointerToString,
+  LongPointerToWideString,
   MenuHandle,
   UINT,
   ULONG_PTR,
   UnsignedInt,
   UnsignedLongPointer,
 } from '../../@types';
+
+interface IMenuItemInfo {
+  cbSize: UnsignedInt;
+  fMask: UnsignedInt;
+  fType: UnsignedInt;
+  fState: UnsignedInt;
+  wID: UnsignedInt;
+  hSubMenu: MenuHandle;
+  hbmpChecked: BitmapHandle;
+  hbmpUnchecked: BitmapHandle;
+  dwItemData: UnsignedLongPointer;
+  cch: UnsignedInt;
+  hbmpItem: BitmapHandle;
+}
+
+class MenuItemInfo<T extends IMenuItemInfoA | IMenuItemInfoW> {
+  cbSize: UnsignedInt;
+  fMask: UnsignedInt;
+  fType: UnsignedInt;
+  fState: UnsignedInt;
+  wID: UnsignedInt;
+  hSubMenu: MenuHandle;
+  hbmpChecked: BitmapHandle;
+  hbmpUnchecked: BitmapHandle;
+  dwItemData: UnsignedLongPointer;
+  dwTypeData: T['dwTypeData'];
+  cch: UnsignedInt;
+  hbmpItem: BitmapHandle;
+
+  constructor(options?: Partial<Omit<T, 'cbSize'>>) {
+    Object.assign(this, options);
+  }
+}
+
+export interface IMenuItemInfoA extends IMenuItemInfo {
+  dwTypeData: LongPointerToString;
+}
+
+export class MenuItemInfoW extends MenuItemInfo<IMenuItemInfoW> {
+  constructor(options?: Partial<Omit<IMenuItemInfoW, 'cbSize'>>) {
+    super(options);
+
+    this.cbSize = koffi.sizeof(MENUITEMINFOW);
+  }
+}
+
+export interface IMenuItemInfoW extends IMenuItemInfo {
+  dwTypeData: LongPointerToWideString;
+}
+
+export class MenuItemInfoA extends MenuItemInfo<IMenuItemInfoA> {
+  constructor(options: Partial<Omit<IMenuItemInfoA, 'cbSize'>>) {
+    super(options);
+
+    this.cbSize = koffi.sizeof(MENUITEMINFOA);
+  }
+}
+
+export const MENUITEMINFOW = koffi.struct('MENUITEMINFOW', {
+  cbSize: UINT,
+  fMask: UINT,
+  fType: UINT,
+  fState: UINT,
+  wID: UINT,
+  hSubMenu: HMENU,
+  hbmpChecked: HBITMAP,
+  hbmpUnchecked: HBITMAP,
+  dwItemData: ULONG_PTR,
+  dwTypeData: LPWSTR,
+  cch: UINT,
+  hbmpItem: HBITMAP,
+});
+
+export const LPMENUITEMINFOW = koffi.pointer('LPMENUITEMINFOW', MENUITEMINFOW);
+
+export const MENUITEMINFOA = koffi.struct('MENUITEMINFOA', {
+  cbSize: UINT,
+  fMask: UINT,
+  fType: UINT,
+  fState: UINT,
+  wID: UINT,
+  hSubMenu: HMENU,
+  hbmpChecked: HBITMAP,
+  hbmpUnchecked: HBITMAP,
+  dwItemData: ULONG_PTR,
+  dwTypeData: LPSTR,
+  cch: UINT,
+  hbmpItem: HBITMAP,
+});
+
+export const LPMENUITEMINFOA = koffi.pointer('LPMENUITEMINFOA', MENUITEMINFOA);
 
 export enum MenuItemInfoMask {
   STATE = 0x00000001,
@@ -66,102 +159,3 @@ export enum MenuFlagState {
   UNHILITE = MenuFlag.UNHILITE,
   DEFAULT = MenuFlag.DEFAULT,
 }
-
-class MenuItemInfo<T extends IMenuItemInfoA | IMenuItemInfoW> {
-  cbSize: UnsignedInt;
-  fMask: UnsignedInt;
-  fType: UnsignedInt;
-  fState: UnsignedInt;
-  wID: UnsignedInt;
-  hSubMenu: MenuHandle;
-  hbmpChecked: BitmapHandle;
-  hbmpUnchecked: BitmapHandle;
-  dwItemData: UnsignedLongPointer;
-  dwTypeData: T['dwTypeData'];
-  cch: UnsignedInt;
-  hbmpItem: BitmapHandle;
-
-  constructor(options?: Partial<Omit<T, 'cbSize'>>) {
-    Object.assign(this, options);
-  }
-}
-
-export interface IMenuItemInfoA {
-  cbSize: UnsignedInt;
-  fMask: UnsignedInt;
-  fType: UnsignedInt;
-  fState: UnsignedInt;
-  wID: UnsignedInt;
-  hSubMenu: MenuHandle;
-  hbmpChecked: BitmapHandle;
-  hbmpUnchecked: BitmapHandle;
-  dwItemData: UnsignedLongPointer;
-  dwTypeData: LongPointerToString;
-  cch: UnsignedInt;
-  hbmpItem: BitmapHandle;
-}
-
-export class MenuItemInfoW extends MenuItemInfo<IMenuItemInfoW> {
-  constructor(options?: Partial<Omit<IMenuItemInfoW, 'cbSize'>>) {
-    super(options);
-
-    this.cbSize = koffi.sizeof(MENUITEMINFOW);
-  }
-}
-
-export interface IMenuItemInfoW {
-  cbSize: UnsignedInt;
-  fMask: UnsignedInt;
-  fType: UnsignedInt;
-  fState: UnsignedInt;
-  wID: UnsignedInt;
-  hSubMenu: MenuHandle;
-  hbmpChecked: BitmapHandle;
-  hbmpUnchecked: BitmapHandle;
-  dwItemData: UnsignedLongPointer;
-  dwTypeData: LongPointerToString;
-  cch: UnsignedInt;
-  hbmpItem: BitmapHandle;
-}
-
-export class MenuItemInfoA extends MenuItemInfo<IMenuItemInfoA> {
-  constructor(options: Partial<Omit<IMenuItemInfoA, 'cbSize'>>) {
-    super(options);
-
-    this.cbSize = koffi.sizeof(MENUITEMINFOA);
-  }
-}
-
-export const MENUITEMINFOW = koffi.struct('MENUITEMINFOW', {
-  cbSize: UINT,
-  fMask: UINT,
-  fType: UINT,
-  fState: UINT,
-  wID: UINT,
-  hSubMenu: HMENU,
-  hbmpChecked: HBITMAP,
-  hbmpUnchecked: HBITMAP,
-  dwItemData: ULONG_PTR,
-  dwTypeData: LPWSTR,
-  cch: UINT,
-  hbmpItem: HBITMAP,
-});
-
-export const LPMENUITEMINFOW = koffi.pointer('LPMENUITEMINFOW', MENUITEMINFOW);
-
-export const MENUITEMINFOA = koffi.struct('MENUITEMINFOA', {
-  cbSize: UINT,
-  fMask: UINT,
-  fType: UINT,
-  fState: UINT,
-  wID: UINT,
-  hSubMenu: HMENU,
-  hbmpChecked: HBITMAP,
-  hbmpUnchecked: HBITMAP,
-  dwItemData: ULONG_PTR,
-  dwTypeData: LPWSTR,
-  cch: UINT,
-  hbmpItem: HBITMAP,
-});
-
-export const LPMENUITEMINFOA = koffi.pointer('LPMENUITEMINFOA', MENUITEMINFOA);
