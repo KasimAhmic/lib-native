@@ -1,13 +1,13 @@
 import koffi from 'koffi';
 
-import { LPSTARTUPINFO, VOID } from '../../@types';
-import { IStartupInfo, StartupInfo } from '../structs/startup-info';
+import { VOID } from '../../@types';
+import { IStartupInfoA, IStartupInfoW, LPSTARTUPINFOA, LPSTARTUPINFOW } from '../structs/startup-info';
 import { kernel32 } from './kernel32';
 
-export function GetStartupInfoW(): IStartupInfo {
-  const startupInfo = new StartupInfo();
+export function GetStartupInfoW(startupInfo: IStartupInfoW): void {
+  return kernel32.invoke('GetStartupInfoW', VOID, [koffi.out(LPSTARTUPINFOW)], [startupInfo]);
+}
 
-  kernel32.invoke('GetStartupInfoW', VOID, [koffi.out(LPSTARTUPINFO)], [startupInfo]);
-
-  return startupInfo;
+export function GetStartupInfoA(startupInfo: IStartupInfoA): void {
+  return kernel32.invoke('GetStartupInfoA', VOID, [koffi.out(LPSTARTUPINFOA)], [startupInfo]);
 }

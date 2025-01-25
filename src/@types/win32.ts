@@ -284,25 +284,3 @@ export const WNDPROC = koffi.pointer(
   'WNDPROC',
   koffi.proto('__wndproc', LRESULT, [HWND, UINT, WPARAM, LPARAM]),
 );
-
-export const STARTUPINFO = koffi.struct('STARTUPINFO', {
-  cb: DWORD,
-  lpReserved: LPWSTR,
-  lpDesktop: LPWSTR,
-  lpTitle: LPWSTR,
-  dwX: DWORD,
-  dwY: DWORD,
-  dwXSize: DWORD,
-  dwYSize: DWORD,
-  dwXCountChars: DWORD,
-  dwYCountChars: DWORD,
-  dwFillAttribute: DWORD,
-  dwFlags: DWORD,
-  wShowWindow: WORD,
-  cbReserved2: WORD,
-  lpReserved2: LPBYTE,
-  hStdInput: HANDLE,
-  hStdOutput: HANDLE,
-  hStdError: HANDLE,
-});
-export const LPSTARTUPINFO = koffi.pointer('LPSTARTUPINFO', STARTUPINFO);
