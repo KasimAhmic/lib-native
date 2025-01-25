@@ -2,7 +2,6 @@
  * Proof of concept Notepad example using lib-native.
  *
  * Todos:
- * - Set the icon to a notepad icon
  * - Update the title bar to show the file name
  * - Implement a state system to track changes (WIP)
  * - Implement File menu actions
@@ -11,9 +10,9 @@
  * - Implement View menu actions
  * - Implement Help menu actions
  */
-import { resolve } from 'node:path';
+import { join, resolve } from 'node:path';
 
-import { WindowHandle } from '../../@types';
+import { IconHandle, WindowHandle } from '../../@types';
 import { comctl32 } from '../../win32/comctl32/comctl32';
 import { InitCommonControlsEx } from '../../win32/comctl32/init-common-controls-ex';
 import { gdi32 } from '../../win32/gdi32/gdi32';
@@ -38,7 +37,7 @@ import { DefWindowProcW } from '../../win32/user32/def-window-proc';
 import { DispatchMessageW } from '../../win32/user32/dispatch-message';
 import { GetMessageW } from '../../win32/user32/get-message';
 import { Cursor, LoadCursorW } from '../../win32/user32/load-cursor';
-import { Icon, LoadIconW } from '../../win32/user32/load-icon';
+import { Image, LoadImageW, LoadResource } from '../../win32/user32/load-image';
 import { MessageBoxButtons, MessageBoxIcon, MessageBoxW } from '../../win32/user32/message-box';
 import { PostQuitMessage } from '../../win32/user32/post-quit-message';
 import { RegisterClassExW } from '../../win32/user32/register-class-ex';
@@ -146,8 +145,22 @@ function WinMain(instanceHandle: number, showCmd: number): number {
     lpszClassName: CLASS_NAME,
     hInstance: state.handles.instanceHandle,
     hCursor: LoadCursorW(null, Cursor.IDC_ARROW),
-    hIcon: LoadIconW(null, Icon.IDI_APPLICATION),
-    hIconSm: LoadIconW(null, Icon.IDI_APPLICATION),
+    hIcon: LoadImageW(
+      null,
+      join(process.cwd(), 'src', 'examples', 'notepad', 'notepad.ico'),
+      Image.ICON,
+      64,
+      64,
+      LoadResource.LOADFROMFILE | LoadResource.SHARED,
+    ) as IconHandle,
+    hIconSm: LoadImageW(
+      null,
+      join(process.cwd(), 'src', 'examples', 'notepad', 'notepad.ico'),
+      Image.ICON,
+      16,
+      16,
+      LoadResource.LOADFROMFILE | LoadResource.SHARED,
+    ) as IconHandle,
     hbrBackground: 13,
     lpfnWndProc: WindowProcedure,
   });
