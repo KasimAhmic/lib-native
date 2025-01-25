@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <uxtheme.h>
 #include <commctrl.h>
+#include <WinUser.h>
 
 #pragma comment(lib, "uxtheme.lib")
 #pragma comment(lib, "Comctl32.lib")
@@ -29,6 +30,27 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	INITCOMMONCONTROLSEX icex = {sizeof(INITCOMMONCONTROLSEX), ICC_STANDARD_CLASSES};
 	InitCommonControlsEx(&icex);
 
+	LPCWSTR iconFilePath = L"E:\\Work\\Personal\\ffi\\src\\examples\\notepad\\notepad.ico";
+
+	// Load the .ico file
+	HICON hIcon = (HICON)LoadImageW(
+			NULL,												// hInstance: NULL because we're loading from the file system
+			iconFilePath,								// File path to the .ico file
+			IMAGE_ICON,									// Type of image to load
+			32,													// Desired width of the icon
+			32,													// Desired height of the icon
+			LR_LOADFROMFILE | LR_SHARED // Load options: from file and shareable
+	);
+
+	if (hIcon == NULL)
+	{
+		// If loading failed, print the error
+		DWORD error = GetLastError();
+		wprintf(L"Failed to load icon from file. Error code: %lu\n", error);
+	}
+
+	wprintf(L"Icon loaded successfully from file: %ls\n", iconFilePath);
+
 	const wchar_t CLASS_NAME[] = L"MyWindowClass";
 
 	WNDCLASSEX wc = {};
@@ -40,6 +62,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	wc.hCursor = LoadCursorW(NULL, IDC_ARROW);
 	wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
 	wc.lpszClassName = CLASS_NAME;
+	wc.hIcon = hIcon;
+	wc.hIconSm = hIcon;
 
 	if (!RegisterClassExW(&wc))
 	{
