@@ -3,6 +3,20 @@ import koffi from 'koffi';
 import { INT, Int, UINT, UnsignedInt } from '../../@types';
 import { ILogFontA, ILogFontW, LOGFONTA, LOGFONTW } from './log-font';
 
+export interface INonClientMetrics {
+  cbSize: UnsignedInt;
+  iBorderWidth: Int;
+  iScrollWidth: Int;
+  iScrollHeight: Int;
+  iCaptionWidth: Int;
+  iCaptionHeight: Int;
+  iSmCaptionWidth: Int;
+  iSmCaptionHeight: Int;
+  iMenuWidth: Int;
+  iMenuHeight: Int;
+  iPaddedBorderWidth: Int;
+}
+
 class NonClientMetrics<T extends INonClientMetricsA | INonClientMetricsW> {
   cbSize: UnsignedInt;
   iBorderWidth: Int;
@@ -46,23 +60,12 @@ class NonClientMetrics<T extends INonClientMetricsA | INonClientMetricsW> {
   }
 }
 
-export interface INonClientMetricsW {
-  cbSize: UnsignedInt;
-  iBorderWidth: Int;
-  iScrollWidth: Int;
-  iScrollHeight: Int;
-  iCaptionWidth: Int;
-  iCaptionHeight: Int;
+export interface INonClientMetricsW extends INonClientMetrics {
   lfCaptionFont: ILogFontW;
-  iSmCaptionWidth: Int;
-  iSmCaptionHeight: Int;
   lfSmCaptionFont: ILogFontW;
-  iMenuWidth: Int;
-  iMenuHeight: Int;
   lfMenuFont: ILogFontW;
   lfStatusFont: ILogFontW;
   lfMessageFont: ILogFontW;
-  iPaddedBorderWidth: Int;
 }
 
 export class NonClientMetricsW extends NonClientMetrics<INonClientMetricsW> {
@@ -73,23 +76,12 @@ export class NonClientMetricsW extends NonClientMetrics<INonClientMetricsW> {
   }
 }
 
-export interface INonClientMetricsA {
-  cbSize: UnsignedInt;
-  iBorderWidth: Int;
-  iScrollWidth: Int;
-  iScrollHeight: Int;
-  iCaptionWidth: Int;
-  iCaptionHeight: Int;
+export interface INonClientMetricsA extends INonClientMetrics {
   lfCaptionFont: ILogFontA;
-  iSmCaptionWidth: Int;
-  iSmCaptionHeight: Int;
   lfSmCaptionFont: ILogFontA;
-  iMenuWidth: Int;
-  iMenuHeight: Int;
   lfMenuFont: ILogFontA;
   lfStatusFont: ILogFontA;
   lfMessageFont: ILogFontA;
-  iPaddedBorderWidth: Int;
 }
 
 export class NonClientMetricsA extends NonClientMetrics<INonClientMetricsA> {
