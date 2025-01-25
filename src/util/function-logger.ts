@@ -5,8 +5,15 @@ import { Color, LogLevel, Logger } from './logger';
 export class FunctionLogger extends Logger {
   private ignoreList: string[];
 
-  constructor(name: string, locale: string = 'en-US', formatterOptions: Intl.DateTimeFormatOptions = {}) {
-    super(name, locale, formatterOptions);
+  constructor(
+    name: string,
+    logLevel: LogLevel = LogLevel.INFO,
+    locale: string = 'en-US',
+    formatterOptions: Intl.DateTimeFormatOptions = {},
+  ) {
+    super(name, logLevel, locale, formatterOptions);
+
+    this.ignoreList = [];
   }
 
   ignore(...functionNames: string[]): void {
@@ -15,7 +22,7 @@ export class FunctionLogger extends Logger {
 
   // TODO: This may not handle every type properly, might need to look into it again in the future
   logFunctionCall(functionName: string, functionArguments: unknown[], functionResult: unknown): void {
-    if (this.ignoreList.includes(functionName)) {
+    if (this.ignoreList.includes(functionName) || this.logLevel > LogLevel.VERBOSE) {
       return;
     }
 

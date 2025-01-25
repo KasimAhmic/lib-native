@@ -1,10 +1,10 @@
 export enum LogLevel {
-  DEBUG = '  DEBUG',
-  LOG = '    LOG',
-  WARN = '   WARN',
-  ERROR = '  ERROR',
-  FATAL = '  FATAL',
-  VERBOSE = 'VERBOSE',
+  VERBOSE,
+  DEBUG,
+  INFO,
+  WARN,
+  ERROR,
+  FATAL,
 }
 
 export enum Color {
@@ -17,26 +17,41 @@ export enum Color {
   RESET = '\x1b[1;0m',
 }
 
+const LOG_LEVEL_LABELS: Record<LogLevel, string> = {
+  [LogLevel.VERBOSE]: 'VERBOSE',
+  [LogLevel.DEBUG]: '  DEBUG',
+  [LogLevel.INFO]: '   INFO',
+  [LogLevel.WARN]: '   WARN',
+  [LogLevel.ERROR]: '  ERROR',
+  [LogLevel.FATAL]: '  FATAL',
+};
+
 const LOG_LEVEL_COLORS: Record<LogLevel, Color> = {
+  [LogLevel.VERBOSE]: Color.CYAN,
   [LogLevel.DEBUG]: Color.MAGENTA,
-  [LogLevel.LOG]: Color.GREEN,
+  [LogLevel.INFO]: Color.GREEN,
   [LogLevel.WARN]: Color.YELLOW,
   [LogLevel.ERROR]: Color.RED,
   [LogLevel.FATAL]: Color.WHITE,
-  [LogLevel.VERBOSE]: Color.CYAN,
 };
 
 type Message = string | number | boolean | Record<string, unknown> | unknown[] | null | undefined;
 
 export class Logger {
-  private readonly name: string;
-  private readonly formatter: Intl.DateTimeFormat;
+  protected readonly name: string;
+  protected readonly logLevel: LogLevel;
+  protected readonly formatter: Intl.DateTimeFormat;
+  protected cachedTimestamp: string;
+  protected timestampLastUpdated: number;
 
-  private cachedTimestamp: string;
-  private timestampLastUpdated: number;
-
-  constructor(name: string, locale: string = 'en-US', formatterOptions: Intl.DateTimeFormatOptions = {}) {
+  constructor(
+    name: string,
+    logLevel: LogLevel = LogLevel.INFO,
+    locale: string = 'en-US',
+    formatterOptions: Intl.DateTimeFormatOptions = {},
+  ) {
     this.name = name;
+    this.logLevel = logLevel;
     this.formatter = new Intl.DateTimeFormat(locale, {
       year: 'numeric',
       month: '2-digit',
@@ -50,14 +65,24 @@ export class Logger {
 
     this.cachedTimestamp = this.timestamp;
     this.timestampLastUpdated = 1000;
+
+    this.verbose = this.logLevel > LogLevel.VERBOSE ? this.noop : this.verbose;
+    this.debug = this.logLevel > LogLevel.DEBUG ? this.noop : this.debug;
+    this.info = this.logLevel > LogLevel.INFO ? this.noop : this.info;
+    this.warn = this.logLevel > LogLevel.WARN ? this.noop : this.warn;
+    this.error = this.logLevel > LogLevel.ERROR ? this.noop : this.error;
+  }
+
+  verbose(...messages: Message[]): void {
+    this.write(LogLevel.VERBOSE, messages);
   }
 
   debug(...messages: Message[]): void {
     this.write(LogLevel.DEBUG, messages);
   }
 
-  log(...messages: Message[]): void {
-    this.write(LogLevel.LOG, messages);
+  info(...messages: Message[]): void {
+    this.write(LogLevel.INFO, messages);
   }
 
   warn(...messages: Message[]): void {
@@ -72,9 +97,7 @@ export class Logger {
     this.write(LogLevel.FATAL, messages);
   }
 
-  verbose(...messages: Message[]): void {
-    this.write(LogLevel.VERBOSE, messages);
-  }
+  protected noop(): void {}
 
   protected write(level: LogLevel, messages: Message[]): void {
     const color = LOG_LEVEL_COLORS[level];
@@ -91,14 +114,14 @@ export class Logger {
     const lib = `${color}[lib-native]${Color.RESET}`;
     const pid = `${color}${process.pid}${Color.RESET}`;
     const timestamp = this.timestamp;
-    const lvl = `${color}${level}${Color.RESET}`;
+    const lvl = `${color}${LOG_LEVEL_LABELS[level]}${Color.RESET}`;
     const name = `${nameColor}[${this.name}]${Color.RESET}`;
 
     return `${lib} ${pid} - ${timestamp} ${lvl} ${name}`;
   }
 
   protected formatMessage(messages: Message[]): string {
-    const parts: string[] = [];
+    let formattedString = '';
 
     for (let i = 0; i < messages.length; i++) {
       const message = messages[i];
@@ -107,20 +130,24 @@ export class Logger {
         case 'string':
         case 'number':
         case 'boolean':
-          parts.push(`${message}`);
+          formattedString += `${message}`;
           break;
         case 'undefined':
-          parts.push('undefined');
+          formattedString += 'undefined';
           break;
         case 'object':
-          parts.push(message ? JSON.stringify(message) : 'null');
+          formattedString += message ? JSON.stringify(message) : 'null';
           break;
         default:
-          parts.push(`${message}`);
+          formattedString += `${message}`;
+      }
+
+      if (i < messages.length - 1) {
+        formattedString += ' ';
       }
     }
 
-    return parts.join(' ');
+    return formattedString;
   }
 
   protected get timestamp(): string {
