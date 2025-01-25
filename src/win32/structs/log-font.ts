@@ -2,6 +2,22 @@ import koffi from 'koffi';
 
 import { BYTE, Byte, CHAR, Char, LONG, Long, WCHAR, WideChar } from '../../@types';
 
+interface ILogFont {
+  lfHeight: Long;
+  lfWidth: Long;
+  lfEscapement: Long;
+  lfOrientation: Long;
+  lfWeight: Long;
+  lfItalic: Byte;
+  lfUnderline: Byte;
+  lfStrikeOut: Byte;
+  lfCharSet: Byte;
+  lfOutPrecision: Byte;
+  lfClipPrecision: Byte;
+  lfQuality: Byte;
+  lfPitchAndFamily: Byte;
+}
+
 class LogFont<T extends ILogFontA | ILogFontW> {
   lfHeight: Long;
   lfWidth: Long;
@@ -41,20 +57,7 @@ class LogFont<T extends ILogFontA | ILogFontW> {
   }
 }
 
-export interface ILogFontW {
-  lfHeight: Long;
-  lfWidth: Long;
-  lfEscapement: Long;
-  lfOrientation: Long;
-  lfWeight: Long;
-  lfItalic: Byte;
-  lfUnderline: Byte;
-  lfStrikeOut: Byte;
-  lfCharSet: Byte;
-  lfOutPrecision: Byte;
-  lfClipPrecision: Byte;
-  lfQuality: Byte;
-  lfPitchAndFamily: Byte;
+export interface ILogFontW extends ILogFont {
   lfFaceName: Char;
 }
 
@@ -64,20 +67,7 @@ export class LogFontW extends LogFont<ILogFontW> {
   }
 }
 
-export interface ILogFontA {
-  lfHeight: Long;
-  lfWidth: Long;
-  lfEscapement: Long;
-  lfOrientation: Long;
-  lfWeight: Long;
-  lfItalic: Byte;
-  lfUnderline: Byte;
-  lfStrikeOut: Byte;
-  lfCharSet: Byte;
-  lfOutPrecision: Byte;
-  lfClipPrecision: Byte;
-  lfQuality: Byte;
-  lfPitchAndFamily: Byte;
+export interface ILogFontA extends ILogFont {
   lfFaceName: WideChar;
 }
 
@@ -86,25 +76,6 @@ export class LogFontA extends LogFont<ILogFontA> {
     super(options);
   }
 }
-
-export const LOGFONTA = koffi.struct('LOGFONTA', {
-  lfHeight: LONG,
-  lfWidth: LONG,
-  lfEscapement: LONG,
-  lfOrientation: LONG,
-  lfWeight: LONG,
-  lfItalic: BYTE,
-  lfUnderline: BYTE,
-  lfStrikeOut: BYTE,
-  lfCharSet: BYTE,
-  lfOutPrecision: BYTE,
-  lfClipPrecision: BYTE,
-  lfQuality: BYTE,
-  lfPitchAndFamily: BYTE,
-  lfFaceName: CHAR,
-});
-
-export const PLOGFONTA = koffi.pointer('PLOGFONTA', LOGFONTA);
 
 export const LOGFONTW = koffi.struct('LOGFONTW', {
   lfHeight: LONG,
@@ -124,3 +95,22 @@ export const LOGFONTW = koffi.struct('LOGFONTW', {
 });
 
 export const PLOGFONTW = koffi.pointer('PLOGFONTW', LOGFONTW);
+
+export const LOGFONTA = koffi.struct('LOGFONTA', {
+  lfHeight: LONG,
+  lfWidth: LONG,
+  lfEscapement: LONG,
+  lfOrientation: LONG,
+  lfWeight: LONG,
+  lfItalic: BYTE,
+  lfUnderline: BYTE,
+  lfStrikeOut: BYTE,
+  lfCharSet: BYTE,
+  lfOutPrecision: BYTE,
+  lfClipPrecision: BYTE,
+  lfQuality: BYTE,
+  lfPitchAndFamily: BYTE,
+  lfFaceName: CHAR,
+});
+
+export const PLOGFONTA = koffi.pointer('PLOGFONTA', LOGFONTA);
