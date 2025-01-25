@@ -7,6 +7,7 @@ export class Library {
   private readonly name: string;
   private readonly path: string;
   private readonly logger: Logger;
+  private readonly functionCache: Record<string, any> = {};
 
   private lib: koffi.IKoffiLib;
   private loaded: boolean = false;
@@ -70,7 +71,7 @@ export class Library {
       throw new Error(`Library ${this.name} is not loaded`);
     }
 
-    const func = this.lib.func('__stdcall', functionName, functionReturnType, functionArgumentTypes);
+    const func = this.getFunction(functionName, functionReturnType, functionArgumentTypes);
 
     const result = func(...functionArguments);
 
@@ -78,6 +79,24 @@ export class Library {
     this.logger.logFunctionCall(functionName, functionArguments, result);
 
     return result;
+  }
+
+  private getFunction(
+    functionName: string,
+    functionReturnType: Win32Type<Nominal<unknown, unknown>>,
+    functionArgumentTypes: any[],
+  ) {
+    let cachedFunction = this.functionCache[functionName];
+
+    if (cachedFunction) {
+      return cachedFunction;
+    }
+
+    const func = this.lib.func('__stdcall', functionName, functionReturnType, functionArgumentTypes);
+
+    this.functionCache[functionName] = func;
+
+    return func;
   }
 
   private mapFunctionArguments(functionArguments: any[]): string {
