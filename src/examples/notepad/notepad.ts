@@ -28,7 +28,7 @@ import { Message } from '../../win32/structs/message';
 import { ClassStyle, WindowClassExW } from '../../win32/structs/window-class';
 import { CreateAcceleratorTableW } from '../../win32/user32/create-accelerator-table';
 import {
-  CreateWindowEx,
+  CreateWindowExW,
   ExtendedWindowStyle,
   WindowPosition,
   WindowStyle,
@@ -167,7 +167,7 @@ function WinMain(instanceHandle: number, showCmd: number): number {
 
   RegisterClassExW(windowClass);
 
-  state.handles.mainWindowHandle = CreateWindowEx(
+  state.handles.mainWindowHandle = CreateWindowExW(
     ExtendedWindowStyle.WINDOW_EDGE | ExtendedWindowStyle.ACCEPT_FILES,
     CLASS_NAME,
     'Untitled - Notepad',

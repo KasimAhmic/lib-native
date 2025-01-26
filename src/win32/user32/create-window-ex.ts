@@ -5,14 +5,86 @@ import {
   HWND,
   INT,
   InstanceHandle,
+  LPCSTR,
   LPCWSTR,
   LPVOID,
+  LongPointerToConstantString,
   LongPointerToConstantWideString,
   LongPointerToVoid,
   MenuHandle,
   WindowHandle,
 } from '../../@types';
 import { user32 } from './user32';
+
+export function CreateWindowExW(
+  extendedWindowStyle: ExtendedWindowStyle,
+  className: LongPointerToConstantWideString,
+  windowName: LongPointerToConstantWideString,
+  style: WindowStyle | ButtonStyle | EditStyle,
+  xPosition: WindowPosition | number,
+  yPosition: WindowPosition | number,
+  width: WindowPosition | number,
+  height: WindowPosition | number,
+  parentWindowHandle: WindowHandle,
+  menuHandle: MenuHandle,
+  instanceHandle: InstanceHandle,
+  param: LongPointerToVoid,
+) {
+  return user32.invoke(
+    'CreateWindowExW',
+    HWND,
+    [DWORD, LPCWSTR, LPCWSTR, DWORD, INT, INT, INT, INT, HWND, HMENU, HINSTANCE, LPVOID],
+    [
+      extendedWindowStyle,
+      className,
+      windowName,
+      style,
+      xPosition,
+      yPosition,
+      width,
+      height,
+      parentWindowHandle,
+      menuHandle,
+      instanceHandle,
+      param,
+    ],
+  );
+}
+
+export function CreateWindowExA(
+  extendedWindowStyle: ExtendedWindowStyle,
+  className: LongPointerToConstantString,
+  windowName: LongPointerToConstantString,
+  style: WindowStyle | ButtonStyle | EditStyle,
+  xPosition: WindowPosition | number,
+  yPosition: WindowPosition | number,
+  width: WindowPosition | number,
+  height: WindowPosition | number,
+  parentWindowHandle: WindowHandle,
+  menuHandle: MenuHandle,
+  instanceHandle: InstanceHandle,
+  param: LongPointerToVoid,
+) {
+  return user32.invoke(
+    'CreateWindowExA',
+    HWND,
+    [DWORD, LPCSTR, LPCSTR, DWORD, INT, INT, INT, INT, HWND, HMENU, HINSTANCE, LPVOID],
+    [
+      extendedWindowStyle,
+      className,
+      windowName,
+      style,
+      xPosition,
+      yPosition,
+      width,
+      height,
+      parentWindowHandle,
+      menuHandle,
+      instanceHandle,
+      param,
+    ],
+  );
+}
 
 export enum ExtendedWindowStyle {
   ACCEPT_FILES = 0x00000010,
@@ -129,39 +201,4 @@ export enum StatusBarStyle {
 
 export enum WindowPosition {
   USE_DEFAULT = 0x80000000,
-}
-
-export function CreateWindowEx(
-  extendedWindowStyle: ExtendedWindowStyle,
-  className: LongPointerToConstantWideString,
-  windowName: LongPointerToConstantWideString,
-  style: WindowStyle | ButtonStyle | EditStyle,
-  xPosition: WindowPosition | number,
-  yPosition: WindowPosition | number,
-  width: WindowPosition | number,
-  height: WindowPosition | number,
-  parentWindowHandle: WindowHandle,
-  menuHandle: MenuHandle,
-  instanceHandle: InstanceHandle,
-  param: LongPointerToVoid,
-) {
-  return user32.invoke(
-    'CreateWindowExW',
-    HWND,
-    [DWORD, LPCWSTR, LPCWSTR, DWORD, INT, INT, INT, INT, HWND, HMENU, HINSTANCE, LPVOID],
-    [
-      extendedWindowStyle,
-      className,
-      windowName,
-      style,
-      xPosition,
-      yPosition,
-      width,
-      height,
-      parentWindowHandle,
-      menuHandle,
-      instanceHandle,
-      param,
-    ],
-  );
 }

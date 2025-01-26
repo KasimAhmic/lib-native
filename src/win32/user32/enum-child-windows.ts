@@ -1,14 +1,7 @@
-import {
-  DataType,
-  PointerType,
-  createPointer,
-  freePointer,
-  funcConstructor,
-  load,
-  unwrapPointer,
-} from 'ffi-rs';
+import koffi from 'koffi';
 
-import { User32 } from './user32';
+import { BOOL, HWND, LPARAM, LongParam, WNDENUMPROC, WindowEnumProcedure, WindowHandle } from '../../@types';
+import { user32 } from './user32';
 
 /**
  * Enumerates the child windows that belong to the specified parent window by passing the handle to each
@@ -21,36 +14,15 @@ import { User32 } from './user32';
  *
  * @see https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-enumchildwindows
  */
-export async function EnumChildWindows(
-  parentWindowHandle: number,
-  callback: (childWindowHandle: number, param: number) => boolean,
-  param: number,
-): Promise<boolean> {
-  const funcParams = funcConstructor({
-    paramsType: [DataType.I32, DataType.I32],
-    retType: DataType.Boolean,
-  });
-
-  const callbackPointer = createPointer({
-    paramsType: [funcParams],
-    paramsValue: [callback],
-  });
-
-  const result = await load({
-    library: User32.Name,
-    funcName: 'EnumChildWindows',
-    retType: DataType.Boolean,
-    paramsType: [DataType.I32, DataType.External, DataType.I32],
-    paramsValue: [parentWindowHandle, unwrapPointer(callbackPointer)[0], param],
-    freeResultMemory: true,
-    runInNewThread: true,
-  });
-
-  freePointer({
-    paramsType: [funcParams],
-    paramsValue: callbackPointer,
-    pointerType: PointerType.RsPointer,
-  });
-
-  return result;
+export function EnumChildWindows(
+  parentWindowHandle: WindowHandle | null,
+  windowEnumProcedure: WindowEnumProcedure,
+  longParam: LongParam,
+) {
+  return user32.invoke(
+    'EnumChildWindows',
+    BOOL,
+    [HWND, koffi.pointer(WNDENUMPROC), LPARAM],
+    [parentWindowHandle, windowEnumProcedure, longParam],
+  );
 }

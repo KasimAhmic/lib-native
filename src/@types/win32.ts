@@ -276,10 +276,11 @@ export type WindowProcedure = Nominal<
   (windowHandle: number, message: number, wParam: number, lParam: number) => LongResult,
   'WNDPROC'
 >;
-
-// TODO: Move structs to dedicated files and convert them to classes
+export type WindowEnumProcedure = Nominal<(windowHandle: number, longParam: number) => Bool, 'WNDENUMPROC'>;
 
 export const WNDENUMPROC = koffi.proto('__stdcall', 'WNDENUMPROC', BOOL, [HWND, LPARAM]);
+
+// TODO: Is this correct?
 export const WNDPROC = koffi.pointer(
   'WNDPROC',
   koffi.proto('__wndproc', LRESULT, [HWND, UINT, WPARAM, LPARAM]),

@@ -7,7 +7,7 @@ import { AppendMenuW, MenuFlag } from '../../../win32/user32/append-menu';
 import { CreateMenu } from '../../../win32/user32/create-menu';
 import { CreatePopupMenu } from '../../../win32/user32/create-popup-menu';
 import {
-  CreateWindowEx,
+  CreateWindowExW,
   EditStyle,
   StatusBarStyle,
   WindowStyle,
@@ -59,7 +59,7 @@ import {
 import { state } from '../state';
 
 export function handleWindowCreate(): number {
-  state.handles.editHandle = CreateWindowEx(
+  state.handles.editHandle = CreateWindowExW(
     0,
     EDIT_CLASS_NAME,
     '',
@@ -213,7 +213,7 @@ function createMenu() {
 }
 
 function createStatusBar() {
-  state.handles.statusBarHandle = CreateWindowEx(
+  state.handles.statusBarHandle = CreateWindowExW(
     0,
     STATUS_CLASS_NAME,
     null,
