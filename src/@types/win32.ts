@@ -42,6 +42,7 @@ export type Nominal<T, U> = T & { [Symbol.species]?: U; __jsType?: T };
 
 export type Win32Type<T extends Nominal<unknown, unknown> | null> = IKoffiCType & {
   __jsType?: NonNullable<T>['__jsType'];
+  [Symbol.species]?: NonNullable<T>[typeof Symbol.species];
 };
 
 // Primitive types
@@ -251,8 +252,8 @@ export type WindowHandle = Nominal<Handle['__jsType'], 'HWND'>;
 export type LongPointerToBool = Nominal<number, 'LPBOOL'>;
 export type LongPointerToByte = Nominal<number, 'LPBYTE'>;
 export type LongPointerToColorReference = Nominal<number, 'LPCOLORREF'>;
-export type LongPointerToConstantString = Nominal<string, 'LPCSTR'> | null;
-export type LongPointerToConstantWideString = Nominal<string, 'LPCWSTR'> | null;
+export type LongPointerToConstantString = Nominal<string, 'LPCSTR'>;
+export type LongPointerToConstantWideString = Nominal<string, 'LPCWSTR'>;
 export type LongPointerToConstantTextString = Nominal<string, 'LPCTSTR'>;
 export type LongPointerToConstantVoid = Nominal<number, 'LPCVOID'>;
 export type LongPointerToDoubleWord = Nominal<number, 'LPDWORD'>;

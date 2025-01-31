@@ -14,7 +14,7 @@ import { user32 } from './user32';
  * CreateAcceleratorTableW instead.
  */
 export function LoadAcceleratorsW(
-  instanceHandle: InstanceHandle,
+  instanceHandle: InstanceHandle | null,
   tableName: LongPointerToConstantWideString,
 ): AcceleratorTableHandle {
   return user32.invoke('LoadAcceleratorsW', HACCEL, [HINSTANCE, LPCWSTR], [instanceHandle, tableName]);

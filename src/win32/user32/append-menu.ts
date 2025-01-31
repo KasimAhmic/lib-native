@@ -31,7 +31,7 @@ export function AppendMenuW(
   menuHandle: MenuHandle,
   flags: MenuFlag,
   idNewItem: UnsignedLongPointer,
-  newItem: LongPointerToConstantWideString,
+  newItem: LongPointerToConstantWideString | null,
 ): number {
   return user32.invoke(
     'AppendMenuW',
@@ -45,7 +45,7 @@ export function AppendMenuA(
   menuHandle: MenuHandle,
   flags: MenuFlag,
   idNewItem: UnsignedLongPointer,
-  newItem: LongPointerToConstantString,
+  newItem: LongPointerToConstantString | null,
 ): number {
   return user32.invoke(
     'AppendMenuA',

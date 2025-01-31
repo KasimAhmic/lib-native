@@ -18,17 +18,17 @@ import { user32 } from './user32';
 
 export function CreateWindowExW(
   extendedWindowStyle: ExtendedWindowStyle,
-  className: LongPointerToConstantWideString,
-  windowName: LongPointerToConstantWideString,
+  className: LongPointerToConstantWideString | null,
+  windowName: LongPointerToConstantWideString | null,
   style: WindowStyle | ButtonStyle | EditStyle,
   xPosition: WindowPosition | number,
   yPosition: WindowPosition | number,
   width: WindowPosition | number,
   height: WindowPosition | number,
-  parentWindowHandle: WindowHandle,
-  menuHandle: MenuHandle,
-  instanceHandle: InstanceHandle,
-  param: LongPointerToVoid,
+  parentWindowHandle: WindowHandle | null,
+  menuHandle: MenuHandle | null,
+  instanceHandle: InstanceHandle | null,
+  param: LongPointerToVoid | null,
 ) {
   return user32.invoke(
     'CreateWindowExW',
@@ -53,17 +53,17 @@ export function CreateWindowExW(
 
 export function CreateWindowExA(
   extendedWindowStyle: ExtendedWindowStyle,
-  className: LongPointerToConstantString,
-  windowName: LongPointerToConstantString,
+  className: LongPointerToConstantString | null,
+  windowName: LongPointerToConstantString | null,
   style: WindowStyle | ButtonStyle | EditStyle,
   xPosition: WindowPosition | number,
   yPosition: WindowPosition | number,
   width: WindowPosition | number,
   height: WindowPosition | number,
-  parentWindowHandle: WindowHandle,
-  menuHandle: MenuHandle,
-  instanceHandle: InstanceHandle,
-  param: LongPointerToVoid,
+  parentWindowHandle: WindowHandle | null,
+  menuHandle: MenuHandle | null,
+  instanceHandle: InstanceHandle | null,
+  param: LongPointerToVoid | null,
 ) {
   return user32.invoke(
     'CreateWindowExA',
