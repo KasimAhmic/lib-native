@@ -1,7 +1,3 @@
-// HWND GetAncestor(
-//   [in] HWND hwnd,
-//   [in] UINT gaFlags
-// );
 import { HWND, UINT, WindowHandle } from '../../@types';
 import { user32 } from './user32';
 
