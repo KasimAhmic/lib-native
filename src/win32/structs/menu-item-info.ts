@@ -17,9 +17,9 @@ import {
 
 interface IMenuItemInfo {
   cbSize: UnsignedInt;
-  fMask: UnsignedInt;
-  fType: UnsignedInt;
-  fState: UnsignedInt;
+  fMask: MenuItemInfoMask;
+  fType: MenuFlagType;
+  fState: MenuFlagState;
   wID: UnsignedInt;
   hSubMenu: MenuHandle;
   hbmpChecked: BitmapHandle;
@@ -31,9 +31,9 @@ interface IMenuItemInfo {
 
 class MenuItemInfo<T extends IMenuItemInfoA | IMenuItemInfoW> {
   cbSize: UnsignedInt;
-  fMask: UnsignedInt;
-  fType: UnsignedInt;
-  fState: UnsignedInt;
+  fMask: MenuItemInfoMask;
+  fType: MenuFlagType;
+  fState: MenuFlagState;
   wID: UnsignedInt;
   hSubMenu: MenuHandle;
   hbmpChecked: BitmapHandle;
@@ -149,9 +149,21 @@ export enum MenuFlag {
   END = 0x00000080,
 }
 
+export enum MenuFlagType {
+  STRING = MenuFlag.STRING,
+  BITMAP = MenuFlag.BITMAP,
+  MENUBARBREAK = MenuFlag.MENUBARBREAK,
+  MENUBREAK = MenuFlag.MENUBREAK,
+  OWNERDRAW = MenuFlag.OWNERDRAW,
+  RADIOCHECK = 0x00000200,
+  SEPARATOR = MenuFlag.SEPARATOR,
+  RIGHTORDER = 0x00002000,
+  RIGHTJUSTIFY = MenuFlag.RIGHTJUSTIFY,
+}
+
 export enum MenuFlagState {
   GRAYED = 0x00000003,
-  DISABLED = GRAYED,
+  DISABLED = MenuFlagState.GRAYED,
   CHECKED = MenuFlag.CHECKED,
   HILITE = MenuFlag.HILITE,
   ENABLED = MenuFlag.ENABLED,
