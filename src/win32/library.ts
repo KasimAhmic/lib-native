@@ -58,6 +58,28 @@ export class Library {
     }
   }
 
+  // TODO: The commented out `invoke` and `getFunction` signatures work very well to enforce the number and
+  // types of arguments passed to the functions however they don't really work at all when passing structs
+  // and pointers to structs. I think I can fix this by exporting Nominal types and Win32Type types from the
+  // struct definitions but this will require a bit of rework. I'll look into it later.
+  //
+  // Famous last words...
+
+  // invoke<
+  //   FunctionReturnType extends Win32Type<Nominal<unknown, unknown>>,
+  //   const FunctionArgumentTypes extends Win32Type<Nominal<unknown, unknown>>[],
+  //   const FunctionArguments extends {
+  //     [K in keyof FunctionArgumentTypes]: Nominal<
+  //       FunctionArgumentTypes[K]['__jsType'],
+  //       FunctionArgumentTypes[K][typeof Symbol.species]
+  //     > | null;
+  //   },
+  // >(
+  //   functionName: string,
+  //   functionReturnType: FunctionReturnType,
+  //   functionArgumentTypes: FunctionArgumentTypes,
+  //   functionArguments: FunctionArguments,
+  // ): NonNullable<FunctionReturnType['__jsType']>
   invoke<
     FunctionReturnType extends Win32Type<Nominal<unknown, unknown>>,
     const FunctionArgumentTypes extends Win32Type<Nominal<unknown, unknown>>[],
@@ -80,6 +102,20 @@ export class Library {
     return result;
   }
 
+  // private getFunction<
+  //   FunctionReturnType extends Win32Type<Nominal<unknown, unknown>>,
+  //   const FunctionArgumentTypes extends Win32Type<Nominal<unknown, unknown>>[],
+  //   const FunctionArguments extends {
+  //     [K in keyof FunctionArgumentTypes]: Nominal<
+  //       FunctionArgumentTypes[K]['__jsType'],
+  //       FunctionArgumentTypes[K][typeof Symbol.species]
+  //     > | null;
+  //   },
+  // >(
+  //   functionName: string,
+  //   functionReturnType: FunctionReturnType,
+  //   functionArgumentTypes: FunctionArgumentTypes,
+  // ): KoffiFunc<(...args: FunctionArguments) => FunctionReturnType>
   private getFunction(
     functionName: string,
     functionReturnType: Win32Type<Nominal<unknown, unknown>>,
