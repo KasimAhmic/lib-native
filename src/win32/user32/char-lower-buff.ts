@@ -1,6 +1,6 @@
 import koffi from 'koffi';
 
-import { DWORD, DoubleWord, LPSTR, LPWSTR, LongPointerToString, LongPointerToWideString } from '../../@types';
+import { DWORD, DoubleWord, LPSTR, LPWSTR } from '../../@types';
 import { user32 } from './user32';
 
 export function CharLowerBuffW(characters: Buffer, length: DoubleWord): DoubleWord {
