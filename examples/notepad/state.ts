@@ -6,7 +6,7 @@ import {
   LongPointerToConstantWideString,
   MenuHandle,
   WindowHandle,
-} from '../../@types';
+} from '@ahmic/lib-native';
 import {
   FontCharSet,
   FontClipPrecision,
@@ -15,7 +15,7 @@ import {
   FontPitch,
   FontQuality,
   FontWeight,
-} from '../../win32/gdi32/create-font';
+} from '@ahmic/lib-native/win32/gdi32/create-font';
 
 export type State = {
   isWordWrapEnabled: boolean;

@@ -1,0 +1,11 @@
+{
+  "name": "@ahmic/lib-native-examples",
+  "license": "MIT",
+  "scripts": {
+    "start:notepad": "tsx ./notepad/notepad.ts",
+    "start:calculator": "tsx ./calculator/calculator.ts"
+  },
+  "dependencies": {
+    "@ahmic/lib-native": "file:../src"
+  }
+}

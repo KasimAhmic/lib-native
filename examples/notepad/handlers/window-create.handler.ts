@@ -1,19 +1,19 @@
-import koffi from 'koffi';
-
-import { int32ArrayToLongParam, wideStringToLongParam } from '../../../util/type.util';
-import { EDIT_CLASS_NAME, STATUS_CLASS_NAME } from '../../../win32/classes';
-import { CreateFontW } from '../../../win32/gdi32/create-font';
-import { AppendMenuW, MenuFlag } from '../../../win32/user32/append-menu';
-import { CreateMenu } from '../../../win32/user32/create-menu';
-import { CreatePopupMenu } from '../../../win32/user32/create-popup-menu';
+import { MenuFlag, int32ArrayToLongParam, wideStringToLongParam } from '@ahmic/lib-native';
+import { EDIT_CLASS_NAME, STATUS_CLASS_NAME } from '@ahmic/lib-native/win32/classes';
+import { CreateFontW } from '@ahmic/lib-native/win32/gdi32/create-font';
+import { AppendMenuW } from '@ahmic/lib-native/win32/user32/append-menu';
+import { CreateMenu } from '@ahmic/lib-native/win32/user32/create-menu';
+import { CreatePopupMenu } from '@ahmic/lib-native/win32/user32/create-popup-menu';
 import {
   CreateWindowExW,
   EditStyle,
   StatusBarStyle,
   WindowStyle,
-} from '../../../win32/user32/create-window-ex';
-import { Control, SendMessageW } from '../../../win32/user32/send-message';
-import { SetMenu } from '../../../win32/user32/set-menu';
+} from '@ahmic/lib-native/win32/user32/create-window-ex';
+import { Control, SendMessageW } from '@ahmic/lib-native/win32/user32/send-message';
+import { SetMenu } from '@ahmic/lib-native/win32/user32/set-menu';
+import koffi from 'koffi';
+
 import {
   DEBUG_MENU_LIPSUM,
   EDIT_ID,

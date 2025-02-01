@@ -10,47 +10,52 @@
  * - Implement View menu actions
  * - Implement Help menu actions
  */
-import { join, resolve } from 'node:path';
+import { join } from 'node:path';
 
-import { IconHandle, WindowHandle } from '../../@types';
-import { comctl32 } from '../../win32/comctl32/comctl32';
-import { InitCommonControlsEx } from '../../win32/comctl32/init-common-controls-ex';
-import { gdi32 } from '../../win32/gdi32/gdi32';
-import { createCookie } from '../../win32/helpers/create-cookie';
-import { ActivateActCtx } from '../../win32/kernel32/activate-act-ctx';
-import { CreateActCtxW } from '../../win32/kernel32/create-act-ctx';
-import { GetLastError } from '../../win32/kernel32/get-last-error';
-import { GetModuleHandleW } from '../../win32/kernel32/get-module-handle';
-import { kernel32 } from '../../win32/kernel32/kernel32';
-import { ActivationContextW } from '../../win32/structs/activation-context';
-import { CommonControlStyles, InitCommonControlsExStruct } from '../../win32/structs/init-common-controls-ex';
-import { Message } from '../../win32/structs/message';
-import { ClassStyle, WindowClassExW } from '../../win32/structs/window-class';
-import { CreateAcceleratorTableW } from '../../win32/user32/create-accelerator-table';
+import {
+  ActivationContextW,
+  ClassStyle,
+  CommonControlStyles,
+  IconHandle,
+  InitCommonControlsExStruct,
+  Message,
+  WindowClassExW,
+  WindowHandle,
+} from '@ahmic/lib-native';
+import { comctl32 } from '@ahmic/lib-native/win32/comctl32/comctl32';
+import { InitCommonControlsEx } from '@ahmic/lib-native/win32/comctl32/init-common-controls-ex';
+import { gdi32 } from '@ahmic/lib-native/win32/gdi32/gdi32';
+import { createCookie } from '@ahmic/lib-native/win32/helpers/create-cookie';
+import { ActivateActCtx } from '@ahmic/lib-native/win32/kernel32/activate-act-ctx';
+import { CreateActCtxW } from '@ahmic/lib-native/win32/kernel32/create-act-ctx';
+import { GetLastError } from '@ahmic/lib-native/win32/kernel32/get-last-error';
+import { GetModuleHandleW } from '@ahmic/lib-native/win32/kernel32/get-module-handle';
+import { kernel32 } from '@ahmic/lib-native/win32/kernel32/kernel32';
+import { CreateAcceleratorTableW } from '@ahmic/lib-native/win32/user32/create-accelerator-table';
 import {
   CreateWindowExW,
   ExtendedWindowStyle,
   WindowPosition,
   WindowStyle,
-} from '../../win32/user32/create-window-ex';
-import { DefWindowProcW } from '../../win32/user32/def-window-proc';
-import { DispatchMessageW } from '../../win32/user32/dispatch-message';
-import { GetMessageW } from '../../win32/user32/get-message';
-import { Cursor, LoadCursorW } from '../../win32/user32/load-cursor';
-import { Image, LoadImageW, LoadResource } from '../../win32/user32/load-image';
-import { MessageBoxButtons, MessageBoxIcon, MessageBoxW } from '../../win32/user32/message-box';
-import { PostQuitMessage } from '../../win32/user32/post-quit-message';
-import { RegisterClassExW } from '../../win32/user32/register-class-ex';
-import { Control } from '../../win32/user32/send-message';
-import { ShowWindow } from '../../win32/user32/show-window';
-import { TranslateAcceleratorW } from '../../win32/user32/translate-accelerator';
-import { TranslateMessage } from '../../win32/user32/translate-message';
-import { UpdateWindow } from '../../win32/user32/update-window';
-import { user32 } from '../../win32/user32/user32';
+} from '@ahmic/lib-native/win32/user32/create-window-ex';
+import { DefWindowProcW } from '@ahmic/lib-native/win32/user32/def-window-proc';
+import { DispatchMessageW } from '@ahmic/lib-native/win32/user32/dispatch-message';
+import { GetMessageW } from '@ahmic/lib-native/win32/user32/get-message';
+import { Cursor, LoadCursorW } from '@ahmic/lib-native/win32/user32/load-cursor';
+import { Image, LoadImageW, LoadResource } from '@ahmic/lib-native/win32/user32/load-image';
+import { MessageBoxButtons, MessageBoxIcon, MessageBoxW } from '@ahmic/lib-native/win32/user32/message-box';
+import { PostQuitMessage } from '@ahmic/lib-native/win32/user32/post-quit-message';
+import { RegisterClassExW } from '@ahmic/lib-native/win32/user32/register-class-ex';
+import { Control } from '@ahmic/lib-native/win32/user32/send-message';
+import { ShowWindow } from '@ahmic/lib-native/win32/user32/show-window';
+import { TranslateAcceleratorW } from '@ahmic/lib-native/win32/user32/translate-accelerator';
+import { TranslateMessage } from '@ahmic/lib-native/win32/user32/translate-message';
+import { UpdateWindow } from '@ahmic/lib-native/win32/user32/update-window';
+import { user32 } from '@ahmic/lib-native/win32/user32/user32';
+
+import { ACCELERATORS, CLASS_NAME, WINDOW_HEIGHT, WINDOW_WIDTH } from './calculator.constants';
 import { handleMenu } from './handlers/menu.handler';
-import { handleSize } from './handlers/size.handler';
 import { handleWindowCreate } from './handlers/window-create.handler';
-import { ACCELERATORS, CLASS_NAME, WINDOW_HEIGHT, WINDOW_WIDTH } from './notepad.constants';
 import { state } from './state';
 
 comctl32.load();
@@ -76,9 +81,6 @@ function WindowProcedure(
       PostQuitMessage(0);
       return 0;
 
-    case Control.WM_SIZE:
-      return handleSize(longParam);
-
     default:
       return DefWindowProcW(windowHandle, message, wordParam, longParam);
   }
@@ -94,7 +96,7 @@ function WinMain(instanceHandle: number, showCmd: number): number {
   InitCommonControlsEx(initCommonControlsEx);
 
   const activationContext = new ActivationContextW({
-    lpSource: resolve(process.cwd(), 'src', 'examples', 'notepad', 'notepad.manifest'),
+    lpSource: join(process.cwd(), 'calculator', 'calculator.manifest'),
   });
 
   const activationContextHandle = CreateActCtxW(activationContext);
@@ -147,7 +149,7 @@ function WinMain(instanceHandle: number, showCmd: number): number {
     hCursor: LoadCursorW(null, Cursor.IDC_ARROW),
     hIcon: LoadImageW(
       null,
-      join(process.cwd(), 'src', 'examples', 'notepad', 'notepad.ico'),
+      join(process.cwd(), 'calculator', 'calculator.ico'),
       Image.ICON,
       64,
       64,
@@ -155,7 +157,7 @@ function WinMain(instanceHandle: number, showCmd: number): number {
     ) as IconHandle,
     hIconSm: LoadImageW(
       null,
-      join(process.cwd(), 'src', 'examples', 'notepad', 'notepad.ico'),
+      join(process.cwd(), 'calculator', 'calculator.ico'),
       Image.ICON,
       16,
       16,
@@ -170,7 +172,7 @@ function WinMain(instanceHandle: number, showCmd: number): number {
   state.handles.mainWindowHandle = CreateWindowExW(
     ExtendedWindowStyle.WINDOW_EDGE | ExtendedWindowStyle.ACCEPT_FILES,
     CLASS_NAME,
-    'Untitled - Notepad',
+    'Calculator',
     WindowStyle.MAXIMIZE_BOX |
       WindowStyle.MINIMIZE_BOX |
       WindowStyle.SIZE_BOX |

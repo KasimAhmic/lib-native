@@ -1,16 +1,21 @@
-import { LIPSUM } from '../../../@testing/lipsum';
-import { Logger } from '../../../util/logger';
-import { lowWord } from '../../../util/number.util';
-import { wideStringToLongParam } from '../../../util/type.util';
-import { MenuFlagState, MenuItemInfoMask, MenuItemInfoW } from '../../../win32/structs/menu-item-info';
-import { Rect } from '../../../win32/structs/rect';
-import { WindowStyle } from '../../../win32/user32/create-window-ex';
-import { GetClientRect } from '../../../win32/user32/get-client-rect';
-import { GetWindowLongPtrW, WindowLongPtrIndex } from '../../../win32/user32/get-window-long-ptr';
-import { Control, SendMessageW } from '../../../win32/user32/send-message';
-import { SetMenuItemInfoW } from '../../../win32/user32/set-menu-item-info';
-import { SetWindowLongPtrW } from '../../../win32/user32/set-window-long-ptr';
-import { SetWindowPos } from '../../../win32/user32/set-window-pos';
+import {
+  Logger,
+  MenuFlagState,
+  MenuItemInfoMask,
+  MenuItemInfoW,
+  Rect,
+  lowWord,
+  wideStringToLongParam,
+} from '@ahmic/lib-native';
+import { LIPSUM } from '@ahmic/lib-native/@testing/lipsum';
+import { WindowStyle } from '@ahmic/lib-native/win32/user32/create-window-ex';
+import { GetClientRect } from '@ahmic/lib-native/win32/user32/get-client-rect';
+import { GetWindowLongPtrW, WindowLongPtrIndex } from '@ahmic/lib-native/win32/user32/get-window-long-ptr';
+import { Control, SendMessageW } from '@ahmic/lib-native/win32/user32/send-message';
+import { SetMenuItemInfoW } from '@ahmic/lib-native/win32/user32/set-menu-item-info';
+import { SetWindowLongPtrW } from '@ahmic/lib-native/win32/user32/set-window-long-ptr';
+import { SetWindowPos } from '@ahmic/lib-native/win32/user32/set-window-pos';
+
 import {
   DEBUG_MENU_LIPSUM,
   EDIT_MENU_COPY,

@@ -1,4 +1,4 @@
-import { Accelerator, AcceleratorBehavior, IAccelerator, VirtualKey } from '../../win32/structs/accelerator';
+import { Accelerator, AcceleratorBehavior, IAccelerator, VirtualKey } from '@ahmic/lib-native/win32';
 
 // Class Names
 export const CLASS_NAME = 'LibNativeNotepad';

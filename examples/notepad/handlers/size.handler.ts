@@ -1,8 +1,8 @@
-import { highWord, lowWord } from '../../../util/number.util';
-import { int32ArrayToLongParam } from '../../../util/type.util';
-import { MoveWindow } from '../../../win32/user32/move-window';
-import { Control, SendMessageW } from '../../../win32/user32/send-message';
-import { SetWindowPos } from '../../../win32/user32/set-window-pos';
+import { highWord, int32ArrayToLongParam, lowWord } from '@ahmic/lib-native';
+import { MoveWindow } from '@ahmic/lib-native/win32/user32/move-window';
+import { Control, SendMessageW } from '@ahmic/lib-native/win32/user32/send-message';
+import { SetWindowPos } from '@ahmic/lib-native/win32/user32/set-window-pos';
+
 import { state } from '../state';
 import { getStatusBarParts } from './window-create.handler';
 
