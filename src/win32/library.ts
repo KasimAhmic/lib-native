@@ -79,6 +79,7 @@ export class Library {
   //   functionReturnType: FunctionReturnType,
   //   functionArgumentTypes: FunctionArgumentTypes,
   //   functionArguments: FunctionArguments,
+  //   cacheKey?: string,
   // ): NonNullable<FunctionReturnType['__jsType']>
   invoke<
     FunctionReturnType extends Win32Type<Nominal<unknown, unknown>>,
@@ -88,12 +89,13 @@ export class Library {
     functionReturnType: FunctionReturnType,
     functionArgumentTypes: FunctionArgumentTypes,
     functionArguments: any[],
+    functionCacheKey?: string,
   ): NonNullable<FunctionReturnType['__jsType']> {
     if (!this.loaded) {
       throw new Error(`Library ${this.name} is not loaded`);
     }
 
-    const func = this.getFunction(functionName, functionReturnType, functionArgumentTypes);
+    const func = this.getFunction(functionName, functionReturnType, functionArgumentTypes, functionCacheKey);
 
     const result = func(...functionArguments);
 
@@ -115,13 +117,17 @@ export class Library {
   //   functionName: string,
   //   functionReturnType: FunctionReturnType,
   //   functionArgumentTypes: FunctionArgumentTypes,
+  //   cacheKey?: string,
   // ): KoffiFunc<(...args: FunctionArguments) => FunctionReturnType>
   private getFunction(
     functionName: string,
     functionReturnType: Win32Type<Nominal<unknown, unknown>>,
     functionArgumentTypes: any[],
+    functionCacheKey?: string,
   ) {
-    let cachedFunction = this.functionCache[functionName];
+    const cacheKey = functionCacheKey ?? functionName;
+
+    let cachedFunction = this.functionCache[cacheKey];
 
     if (cachedFunction) {
       return cachedFunction;
@@ -129,7 +135,7 @@ export class Library {
 
     const func = this.lib.func('__stdcall', functionName, functionReturnType, functionArgumentTypes);
 
-    this.functionCache[functionName] = func;
+    this.functionCache[cacheKey] = func;
 
     return func;
   }
