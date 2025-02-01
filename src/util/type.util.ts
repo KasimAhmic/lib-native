@@ -39,7 +39,7 @@ export function stringToAnsiBuffer(string: string): Buffer {
   return Buffer.from(string, 'latin1');
 }
 
-export function ansiStringToString(buffer: Buffer): string {
+export function ansiBufferToString(buffer: Buffer): string {
   return buffer.toString('latin1');
 }
 
@@ -47,6 +47,6 @@ export function stringToUnicodeBuffer(string: string): Buffer {
   return Buffer.from(string, 'utf16le');
 }
 
-export function unicodeStringToString(buffer: Buffer): string {
+export function unicodeBufferToString(buffer: Buffer): string {
   return buffer.toString('utf16le');
 }

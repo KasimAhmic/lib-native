@@ -5,10 +5,10 @@ import koffi from 'koffi';
 
 import { LPSTR, LPWSTR, WORD } from '../../@types';
 import {
-  ansiStringToString,
+  ansiBufferToString,
   stringToAnsiBuffer,
   stringToUnicodeBuffer,
-  unicodeStringToString,
+  unicodeBufferToString,
 } from '../../util/type.util';
 import { user32 } from './user32';
 
@@ -24,7 +24,7 @@ export function CharUpperW(character: string): string {
 
     user32.invoke('CharUpperW', LPWSTR, [koffi.inout(LPWSTR)], [buffer], 'CharUpperWString');
 
-    return unicodeStringToString(buffer);
+    return unicodeBufferToString(buffer);
   }
 }
 
@@ -40,6 +40,6 @@ export function CharUpperA(character: string): string {
 
     user32.invoke('CharUpperA', LPSTR, [koffi.inout(LPSTR)], [buffer], 'CharUpperAString');
 
-    return ansiStringToString(buffer);
+    return ansiBufferToString(buffer);
   }
 }

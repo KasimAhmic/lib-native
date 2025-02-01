@@ -12,10 +12,10 @@ import koffi from 'koffi';
 
 import { LPSTR, LPWSTR, WORD } from '../../@types';
 import {
-  ansiStringToString,
+  ansiBufferToString,
   stringToAnsiBuffer,
   stringToUnicodeBuffer,
-  unicodeStringToString,
+  unicodeBufferToString,
 } from '../../util/type.util';
 import { user32 } from './user32';
 
@@ -31,7 +31,7 @@ export function CharLowerW(character: string): string {
 
     user32.invoke('CharLowerW', LPWSTR, [koffi.inout(LPWSTR)], [buffer], 'CharLowerWString');
 
-    return unicodeStringToString(buffer);
+    return unicodeBufferToString(buffer);
   }
 }
 
@@ -47,6 +47,6 @@ export function CharLowerA(character: string): string {
 
     user32.invoke('CharLowerA', LPSTR, [koffi.inout(LPSTR)], [buffer], 'CharLowerAString');
 
-    return ansiStringToString(buffer);
+    return ansiBufferToString(buffer);
   }
 }
