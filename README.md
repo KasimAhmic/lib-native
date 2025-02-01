@@ -40,7 +40,7 @@ console.log(rect); // Rect { top: 0, left: 0, right: 763, bottom: 557 }
 
 You can find examples in the `/examples` directory.
 
-| Application      | Description                              | Location                                     | Command                    |
-| ---------------- | ---------------------------------------- | -------------------------------------------- | -------------------------- |
-| Notepad (WIP)    | A recreation of Windows Notepad          | [examples/notepad](./examples/notepad)       | `npm run start:notepad`    |
-| Calculator (WIP) | A recreation of the Windows 7 Calculator | [examples/calculator](./examples/calculator) | `npm run start:calculator` |
+| Application      | Location                                     | Command                    |
+| ---------------- | -------------------------------------------- | -------------------------- |
+| Notepad (WIP)    | [examples/notepad](./examples/notepad)       | `npm run start:notepad`    |
+| Calculator (WIP) | [examples/calculator](./examples/calculator) | `npm run start:calculator` |
