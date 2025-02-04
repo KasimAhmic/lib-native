@@ -1,6 +1,7 @@
 import koffi from 'koffi';
 
 import { HWND, INT, LPSTR, LPWSTR } from '../../@types';
+import { ansiBufferToString, unicodeBufferToString } from '../../util';
 import { NULL_TERMINATOR } from '../constants';
 import { user32 } from './user32';
 
@@ -15,7 +16,7 @@ import { user32 } from './user32';
  * @see https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getwindowtexta
  */
 export function GetWindowTextW(windowHandle: number, bufferSize: number = 512): string {
-  const outputBuffer = Buffer.alloc(bufferSize + 1);
+  const outputBuffer = Buffer.alloc(bufferSize + 2);
 
   user32.invoke(
     'GetWindowTextW',
@@ -24,7 +25,7 @@ export function GetWindowTextW(windowHandle: number, bufferSize: number = 512): 
     [windowHandle, outputBuffer, outputBuffer.length],
   );
 
-  return koffi.decode(outputBuffer, LPWSTR).replaceAll(NULL_TERMINATOR, '');
+  return unicodeBufferToString(outputBuffer);
 }
 
 export function GetWindowTextA(windowHandle: number, bufferSize: number = 256): string {
@@ -37,5 +38,5 @@ export function GetWindowTextA(windowHandle: number, bufferSize: number = 256): 
     [windowHandle, outputBuffer, outputBuffer.length],
   );
 
-  return koffi.decode(outputBuffer, LPSTR).replaceAll(NULL_TERMINATOR, '');
+  return ansiBufferToString(outputBuffer);
 }
