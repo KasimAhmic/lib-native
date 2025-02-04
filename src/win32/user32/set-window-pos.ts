@@ -1,4 +1,4 @@
-import { BOOL, HWND, INT, UINT } from '../../@types';
+import { BOOL, HWND, INT, Int, UINT, WindowHandle } from '../../@types';
 import { user32 } from './user32';
 
 export enum WindowLevel {
@@ -26,35 +26,25 @@ export enum WindowFlag {
   SHOW_WINDOW = 0x0040,
 }
 
-type SetWindowPosOptions = {
-  windowHandle: number;
-  insertAfterHandle?: number | WindowLevel;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  flags?: WindowFlag;
-};
-
 /**
  *
  * @param options The options for the `SetWindowPos` function.
  *
  * @see https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setwindowpos
  */
-export function SetWindowPos(options: SetWindowPosOptions): number {
+export function SetWindowPos(
+  windowHandle: WindowHandle,
+  insertAfterHandle: WindowHandle | null,
+  x: Int,
+  y: Int,
+  width: Int,
+  height: Int,
+  flags: WindowFlag,
+): number {
   return user32.invoke(
     'SetWindowPos',
     BOOL,
     [HWND, HWND, INT, INT, INT, INT, UINT],
-    [
-      options.windowHandle,
-      options.insertAfterHandle,
-      options.x,
-      options.y,
-      options.width,
-      options.height,
-      options.flags ?? 0,
-    ],
+    [windowHandle, insertAfterHandle, x, y, width, height, flags ?? 0],
   );
 }
