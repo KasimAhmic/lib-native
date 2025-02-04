@@ -8,16 +8,25 @@ import {
   wideStringToLongParam,
 } from '@ahmic/lib-native';
 import { LIPSUM } from '@ahmic/lib-native/@testing/lipsum';
-import { WindowStyle } from '@ahmic/lib-native/win32/user32/create-window-ex';
+import { EDIT_CLASS_NAME } from '@ahmic/lib-native/win32/classes';
+import {
+  CreateWindowExW,
+  WindowPosition,
+  WindowStyle,
+} from '@ahmic/lib-native/win32/user32/create-window-ex';
+import { DestroyWindow } from '@ahmic/lib-native/win32/user32/destroy-window';
 import { GetClientRect } from '@ahmic/lib-native/win32/user32/get-client-rect';
 import { GetWindowLongPtrW, WindowLongPtrIndex } from '@ahmic/lib-native/win32/user32/get-window-long-ptr';
+import { GetWindowTextW } from '@ahmic/lib-native/win32/user32/get-window-text';
+import { MoveWindow } from '@ahmic/lib-native/win32/user32/move-window';
 import { Control, SendMessageW } from '@ahmic/lib-native/win32/user32/send-message';
 import { SetMenuItemInfoW } from '@ahmic/lib-native/win32/user32/set-menu-item-info';
-import { SetWindowLongPtrW } from '@ahmic/lib-native/win32/user32/set-window-long-ptr';
-import { SetWindowPos } from '@ahmic/lib-native/win32/user32/set-window-pos';
+import { SetWindowTextW } from '@ahmic/lib-native/win32/user32/set-window-text';
+import koffi from 'koffi';
 
 import {
   DEBUG_MENU_LIPSUM,
+  EDIT_ID,
   EDIT_MENU_COPY,
   EDIT_MENU_CUT,
   EDIT_MENU_DELETE,
@@ -215,12 +224,17 @@ function updateZoomLevel() {
 }
 
 function toggleMenuItem(index: number, checked: boolean) {
-  const menuItemInfo = new MenuItemInfoW();
-  menuItemInfo.fMask = MenuItemInfoMask.STATE;
-  menuItemInfo.fState = checked ? MenuFlagState.CHECKED : MenuFlagState.UNCHECKED;
+  const menuItemInfo = new MenuItemInfoW({
+    fMask: MenuItemInfoMask.STATE,
+    fState: checked ? MenuFlagState.CHECKED : MenuFlagState.UNCHECKED,
+  });
 
   SetMenuItemInfoW(state.handles.formatMenuHandle, index, false, menuItemInfo);
 
+  const rect = new Rect();
+  GetClientRect(state.handles.mainWindowHandle, rect);
+
+  const text = GetWindowTextW(state.handles.editHandle, 4096);
   let style = GetWindowLongPtrW(state.handles.editHandle, WindowLongPtrIndex.GWL_STYLE);
 
   if (checked) {
@@ -229,17 +243,27 @@ function toggleMenuItem(index: number, checked: boolean) {
     style |= WindowStyle.H_SCROLL;
   }
 
-  SetWindowLongPtrW(state.handles.editHandle, WindowLongPtrIndex.GWL_STYLE, style);
+  // TODO: Break this out into a reusable function
+  const editHandle = CreateWindowExW(
+    0,
+    EDIT_CLASS_NAME,
+    null,
+    style,
+    WindowPosition.USE_DEFAULT,
+    WindowPosition.USE_DEFAULT,
+    WindowPosition.USE_DEFAULT,
+    WindowPosition.USE_DEFAULT,
+    state.handles.mainWindowHandle,
+    EDIT_ID,
+    state.handles.instanceHandle,
+    0,
+  );
 
-  const rect = new Rect();
-  GetClientRect(state.handles.mainWindowHandle, rect);
+  MoveWindow(editHandle, 0, 0, rect.right, rect.bottom - 23, 1);
 
-  SetWindowPos({
-    windowHandle: state.handles.editHandle,
-    width: rect.right,
-    height: rect.bottom - 23,
-    x: rect.left,
-    y: rect.top,
-    flags: 0x0040 | 0x0020,
-  });
+  DestroyWindow(state.handles.editHandle);
+
+  state.handles.editHandle = editHandle;
+  SendMessageW(state.handles.editHandle, Control.WM_SETFONT, koffi.address(state.handles.fontHandle), 1);
+  SetWindowTextW(state.handles.editHandle, text);
 }

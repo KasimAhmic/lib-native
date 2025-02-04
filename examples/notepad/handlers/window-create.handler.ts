@@ -8,6 +8,7 @@ import {
   CreateWindowExW,
   EditStyle,
   StatusBarStyle,
+  WindowPosition,
   WindowStyle,
 } from '@ahmic/lib-native/win32/user32/create-window-ex';
 import { Control, SendMessageW } from '@ahmic/lib-native/win32/user32/send-message';
@@ -62,17 +63,17 @@ export function handleWindowCreate(): number {
   state.handles.editHandle = CreateWindowExW(
     0,
     EDIT_CLASS_NAME,
-    '',
+    null,
     WindowStyle.CHILD |
       WindowStyle.VISIBLE |
       WindowStyle.H_SCROLL |
       WindowStyle.V_SCROLL |
       EditStyle.NOHIDESEL |
       EditStyle.MULTILINE,
-    0,
-    0,
-    WINDOW_WIDTH,
-    WINDOW_HEIGHT - 580,
+    WindowPosition.USE_DEFAULT,
+    WindowPosition.USE_DEFAULT,
+    WindowPosition.USE_DEFAULT,
+    WindowPosition.USE_DEFAULT,
     state.handles.mainWindowHandle,
     EDIT_ID,
     state.handles.instanceHandle,
@@ -218,10 +219,10 @@ function createStatusBar() {
     STATUS_CLASS_NAME,
     null,
     WindowStyle.CHILD | WindowStyle.VISIBLE | StatusBarStyle.SIZEGRIP,
-    0,
-    0,
-    2000,
-    0,
+    WindowPosition.USE_DEFAULT,
+    WindowPosition.USE_DEFAULT,
+    WindowPosition.USE_DEFAULT,
+    WindowPosition.USE_DEFAULT,
     state.handles.mainWindowHandle,
     0,
     state.handles.instanceHandle,
