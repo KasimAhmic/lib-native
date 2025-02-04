@@ -278,6 +278,14 @@ export type WindowProcedure = Nominal<
   'WNDPROC'
 >;
 export type WindowEnumProcedure = Nominal<(windowHandle: number, longParam: number) => Bool, 'WNDENUMPROC'>;
+export type EditWordBreakProcedureW = Nominal<
+  (text: LongPointerToWideString, start: Int, length: Int, code: Int) => Int,
+  'EDITWORDBREAKPROCW'
+>;
+export type EditWordBreakProcedureA = Nominal<
+  (text: LongPointerToString, start: Int, length: Int, code: Int) => Int,
+  'EDITWORDBREAKPROCA'
+>;
 
 export const WNDENUMPROC = koffi.proto('__stdcall', 'WNDENUMPROC', BOOL, [HWND, LPARAM]);
 
@@ -286,3 +294,22 @@ export const WNDPROC = koffi.pointer(
   'WNDPROC',
   koffi.proto('__wndproc', LRESULT, [HWND, UINT, WPARAM, LPARAM]),
 );
+
+/**
+ * TODO: Simplify usage somehow
+ *
+ * @example
+ * SendMessageW(
+ *   state.handles.editHandle,
+ *   Control.EM_SETWORDBREAKPROC,
+ *   0,
+ *   koffi.address(koffi.register(wordBreakProc, koffi.pointer(EDITWORDBREAKPROCW))),
+ * );
+ */
+export const EDITWORDBREAKPROCW = koffi.proto('__stdcall', 'EDITWORDBREAKPROCW', INT, [
+  LPWSTR,
+  INT,
+  INT,
+  INT,
+]);
+export const EDITWORDBREAKPROCA = koffi.proto('__stdcall', 'EDITWORDBREAKPROCA', INT, [LPSTR, INT, INT, INT]);
