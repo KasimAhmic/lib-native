@@ -312,4 +312,5 @@ export const EDITWORDBREAKPROCW = koffi.proto('__stdcall', 'EDITWORDBREAKPROCW',
   INT,
   INT,
 ]);
+
 export const EDITWORDBREAKPROCA = koffi.proto('__stdcall', 'EDITWORDBREAKPROCA', INT, [LPSTR, INT, INT, INT]);
