@@ -3,7 +3,9 @@ import {
   HACCEL,
   HINSTANCE,
   InstanceHandle,
+  LPCSTR,
   LPCWSTR,
+  LongPointerToConstantString,
   LongPointerToConstantWideString,
 } from '../../@types';
 import { user32 } from './user32';
@@ -18,4 +20,16 @@ export function LoadAcceleratorsW(
   tableName: LongPointerToConstantWideString,
 ): AcceleratorTableHandle {
   return user32.invoke('LoadAcceleratorsW', HACCEL, [HINSTANCE, LPCWSTR], [instanceHandle, tableName]);
+}
+
+/**
+ * @deprecated Not sure if it's possible to use this function as we don't have an executable that would have
+ * accelerators embedded in it. I'll leave it here for now, but the best course of action is to use
+ * CreateAcceleratorTableA instead.
+ */
+export function LoadAcceleratorsA(
+  instanceHandle: InstanceHandle | null,
+  tableName: LongPointerToConstantString,
+): AcceleratorTableHandle {
+  return user32.invoke('LoadAcceleratorsA', HACCEL, [HINSTANCE, LPCSTR], [instanceHandle, tableName]);
 }
