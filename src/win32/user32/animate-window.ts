@@ -13,10 +13,6 @@ export enum AnimateWindowFlag {
   VER_NEGATIVE = 0x00000008,
 }
 
-/**
- *
- * @deprecated Untested. Can't figure out how to use it.
- */
 export function AnimateWindow(windowHandle: WindowHandle, time: DoubleWord, flags: AnimateWindowFlag): Bool {
   return user32.invoke('AnimateWindow', BOOL, [HWND, DWORD, DWORD], [windowHandle, time, flags]);
 }
