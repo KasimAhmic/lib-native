@@ -9,6 +9,8 @@ import {
 } from '@ahmic/lib-native';
 import { LIPSUM } from '@ahmic/lib-native/@testing/lipsum';
 import { EDIT_CLASS_NAME } from '@ahmic/lib-native/win32/classes';
+import { CreateFontW } from '@ahmic/lib-native/win32/gdi32/create-font';
+import { DeleteObject } from '@ahmic/lib-native/win32/gdi32/delete-object';
 import {
   CreateWindowExW,
   WindowPosition,
@@ -58,7 +60,7 @@ import {
   VIEW_MENU_ZOOM_IN,
   VIEW_MENU_ZOOM_OUT,
 } from '../notepad.constants';
-import { DEFAULT_ZOOM_LEVEL, ZOOM_LEVEL_INCREMENT, state } from '../state';
+import { DEFAULT_ZOOM_LEVEL, MAX_ZOOM_LEVEL, MIN_ZOOM_LEVEL, ZOOM_LEVEL_INCREMENT, state } from '../state';
 
 const logger = new Logger('MenuHandler');
 
@@ -170,12 +172,22 @@ export function handleMenu(wordParam: number, longParam: number): number {
 
     case VIEW_MENU_ZOOM_IN:
       logger.debug('VIEW_MENU_ZOOM_IN', VIEW_MENU_ZOOM_IN);
+
+      if (state.zoomLevel >= MAX_ZOOM_LEVEL) {
+        break;
+      }
+
       state.zoomLevel += ZOOM_LEVEL_INCREMENT;
       updateZoomLevel();
       break;
 
     case VIEW_MENU_ZOOM_OUT:
       logger.debug('VIEW_MENU_ZOOM_OUT', VIEW_MENU_ZOOM_OUT);
+
+      if (state.zoomLevel <= MIN_ZOOM_LEVEL) {
+        break;
+      }
+
       state.zoomLevel -= ZOOM_LEVEL_INCREMENT;
       updateZoomLevel();
       break;
@@ -221,6 +233,28 @@ function updateZoomLevel() {
     STATUS_BAR_ZOOM_LEVEL,
     wideStringToLongParam(`${state.zoomLevel}%`),
   );
+
+  const fontHandle = CreateFontW(
+    Math.round(state.font.height * parseFloat((state.zoomLevel / 100).toFixed(2))),
+    state.font.width,
+    state.font.escapement,
+    state.font.orientation,
+    state.font.weight,
+    state.font.italic,
+    state.font.underline,
+    state.font.strikeOut,
+    state.font.charSet,
+    state.font.outPrecision,
+    state.font.clipPrecision,
+    state.font.quality,
+    state.font.pitchAndFamily,
+    state.font.fontFaceName,
+  );
+
+  DeleteObject(state.handles.fontHandle);
+  state.handles.fontHandle = fontHandle;
+
+  SendMessageW(state.handles.editHandle, Control.WM_SETFONT, koffi.address(fontHandle), 1);
 }
 
 function toggleMenuItem(index: number, checked: boolean) {
@@ -259,11 +293,11 @@ function toggleMenuItem(index: number, checked: boolean) {
     0,
   );
 
+  SendMessageW(editHandle, Control.WM_SETFONT, koffi.address(state.handles.fontHandle), 1);
+  SetWindowTextW(editHandle, text);
   MoveWindow(editHandle, 0, 0, rect.right, rect.bottom - 23, 1);
 
   DestroyWindow(state.handles.editHandle);
 
   state.handles.editHandle = editHandle;
-  SendMessageW(state.handles.editHandle, Control.WM_SETFONT, koffi.address(state.handles.fontHandle), 1);
-  SetWindowTextW(state.handles.editHandle, text);
 }
