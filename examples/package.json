@@ -3,7 +3,8 @@
   "license": "MIT",
   "scripts": {
     "start:notepad": "tsx ./notepad/notepad.ts",
-    "start:calculator": "tsx ./calculator/calculator.ts"
+    "start:calculator": "tsx ./calculator/calculator.ts",
+    "start:kitchen-sink": "tsx ./kitchen-sink/kitchen-sink.ts"
   },
   "dependencies": {
     "@ahmic/lib-native": "file:../src"
