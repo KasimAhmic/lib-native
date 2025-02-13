@@ -40,7 +40,8 @@ console.log(rect); // Rect { top: 0, left: 0, right: 763, bottom: 557 }
 
 You can find examples in the `/examples` directory.
 
-| Application      | Location                                     | Command                    |
-| ---------------- | -------------------------------------------- | -------------------------- |
-| Notepad (WIP)    | [examples/notepad](./examples/notepad)       | `npm run start:notepad`    |
-| Calculator (WIP) | [examples/calculator](./examples/calculator) | `npm run start:calculator` |
+| Application        | Location                                         | Command                      |
+| ------------------ | ------------------------------------------------ | ---------------------------- |
+| Notepad (WIP)      | [examples/notepad](./examples/notepad)           | `npm run start:notepad`      |
+| Calculator (WIP)   | [examples/calculator](./examples/calculator)     | `npm run start:calculator`   |
+| Kitchen Sink (WIP) | [examples/kitchen-sink](./examples/kitchen-sink) | `npm run start:kitchen-sink` |
