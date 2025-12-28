@@ -1,3 +1,6 @@
+> [!CAUTION]
+> The project has been discontinued! Please refer to [this issue](https://github.com/KasimAhmic/lib-native/issues/6) for details and consider using [libwin](https://github.com/KasimAhmic/libwin) instead.
+
 # lib-native
 
 lib-native aims to provide a 1 to 1 map of the Win32 API in JavaScript. This is done by leveraging the Koffi library whcih provides a Foreign Function Interface (FFI) for JavaScript, allowing us to call into the Win32 API directly.
